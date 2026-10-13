@@ -22,8 +22,10 @@ export interface RatingProps {
   size?: RatingSize;
   /** Shows the value beside the stars, to one decimal. */
   showValue?: boolean;
-  /** The number of ratings, shown as "3.8K ratings". */
+  /** The number of ratings, shown as "3.8K ratings" (or "1,186 ratings" with `countFormat="full"`). */
   count?: number;
+  /** 'short' (default): 3.8K. 'full': every digit, grouped (1,186), where the exact figure is the point. */
+  countFormat?: 'short' | 'full';
   /** Word after the count. Default 'ratings'. */
   countLabel?: string;
   /** Makes the stars an input: tap a star, or use the increment and decrement actions. */
@@ -53,6 +55,7 @@ export default function Rating({
   size = 'md',
   showValue = false,
   count,
+  countFormat = 'short',
   countLabel = 'ratings',
   onChange,
   disabled = false,
@@ -71,7 +74,8 @@ export default function Rating({
     else if (event.nativeEvent.actionName === 'decrement') set(Math.ceil(clamped) - 1);
   };
   const summary = `${clamped % 1 === 0 ? clamped : clamped.toFixed(1)} out of ${max}`;
-  const label = accessibilityLabel ?? `Rated ${summary}${count !== undefined ? `, ${formatCount(count)} ${countLabel}` : ''}`;
+  const shownCount = count === undefined ? '' : countFormat === 'full' ? Math.round(count).toLocaleString('en-US') : formatCount(count);
+  const label = accessibilityLabel ?? `Rated ${summary}${count !== undefined ? `, ${shownCount} ${countLabel}` : ''}`;
   const stars = Array.from({ length: max }, (_, i) => {
     const filled = Math.min(1, Math.max(0, clamped - i));
     const glyph = (
@@ -115,7 +119,7 @@ export default function Rating({
       {showValue ? <Text style={[type.numeric, styles.value, { color: palette.foreground }]}>{clamped.toFixed(1)}</Text> : null}
       {count !== undefined ? (
         <Text style={[type.bodySm, styles.count, { color: palette['muted-foreground'] }]}>
-          {formatCount(count)} {countLabel}
+          {shownCount} {countLabel}
         </Text>
       ) : null}
     </View>

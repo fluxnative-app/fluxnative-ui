@@ -143,10 +143,11 @@ test('with the kit tokens, Sheet, StateView and SectionHeader render as v0', () 
     { open: true, onClose: noop, children: glyph },
     { open: false, onClose: noop },
   ]);
+  // Kit 0.6: every tone's action is primary (a secondary fill rested near 1.2:1 on a card); the error tone and the rest are unchanged.
   same('components/StateView.tsx', [
     ...matrix(
       { title: 'Nothing here', body: 'Try again later', actionLabel: 'Retry', onAction: noop, icon: glyph },
-      { tone: ['neutral', 'error'], inline: [false, true] },
+      { tone: ['error'], inline: [false, true] },
     ),
     { title: 'Nothing here' },
     { title: 'Nothing here', inline: true, style: { margin: 4 } },

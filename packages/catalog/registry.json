@@ -1797,6 +1797,11 @@
           "type": "number"
         },
         {
+          "name": "countFormat",
+          "optional": true,
+          "type": "'short'|'full'"
+        },
+        {
           "name": "countLabel",
           "optional": true,
           "type": "string"
@@ -1851,6 +1856,9 @@
           "app": "Shop",
           "screen": "https://mobbin.com/screens/3931e59a-b866-467a-a54d-3ccce8f6f2c3"
         }
+      ],
+      "indexOmit": [
+        "countFormat"
       ],
       "deps": [
         "Icon",
@@ -2775,6 +2783,11 @@
           "type": "TypeRole"
         },
         {
+          "name": "labelRole",
+          "optional": true,
+          "type": "TypeRole"
+        },
+        {
           "name": "valueColor",
           "optional": true,
           "type": "ColorName"
@@ -2849,7 +2862,8 @@
         }
       ],
       "indexOmit": [
-        "align"
+        "align",
+        "labelRole"
       ],
       "deps": [
         "Press",

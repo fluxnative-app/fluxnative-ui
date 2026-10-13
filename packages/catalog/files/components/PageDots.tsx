@@ -33,10 +33,10 @@ export interface PageDotsProps {
 /** Comp tokens: dot diameter per size, the active pill's length as a multiple, and the faded dots' opacity per variant. */
 export const pageDotSize: { readonly [S in PageDotsSize]: number } = { sm: 6, md: 8 };
 const PILL = 3;
-// 'dots' marks the page by opacity alone, so a faded dot needs 3:1 both against the ground and against the
-// current dot: `foreground` at 55% on `background` gives 4.4 and 4.5 on the kit palette, 4.0 and 4.4 on
-// laudine-designer-boutique's (30% would be 2.0 against the ground).
-export const pageDotFaded: { readonly [V in PageDotsVariant]: number } = { pill: 0.3, dots: 0.55 };
+// A faded dot is still a page the reader can count, so it reaches 3:1 against the ground: `foreground` at
+// 55% does on every one of the template catalog's 72 light palettes (median 4.0); 30% reached none
+// (median 2.0). In 'dots' the current page is marked by strength alone, and 55% also keeps 3:1 against it.
+export const pageDotFaded: { readonly [V in PageDotsVariant]: number } = { pill: 0.55, dots: 0.55 };
 const SLIDE = { speed: 20, bounciness: 4 };
 
 export default function PageDots({ count, index, size = 'md', variant = 'pill', onPhoto = false, accessibilityLabel, style }: PageDotsProps) {

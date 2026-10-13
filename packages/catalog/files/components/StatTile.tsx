@@ -32,6 +32,8 @@ export interface StatTileProps {
   size?: 'md' | 'lg';
   /** The value's text role instead: 'numeric' carries a brand's number face (a mono family). Tabular figures stay on. */
   valueRole?: TypeRole;
+  /** The label's type role, e.g. 'caps' for a small spaced label. Default 'bodySm'. */
+  labelRole?: TypeRole;
   /** The value's colour role. Default the surface's ink. */
   valueColor?: ColorName;
   /** Default 'start'. */
@@ -64,6 +66,7 @@ export default function StatTile({
   variant = 'card',
   size = 'md',
   valueRole,
+  labelRole = 'bodySm',
   valueColor,
   align = 'start',
   onPress,
@@ -77,7 +80,7 @@ export default function StatTile({
   const surface = variant === 'card' ? { backgroundColor: palette.card, borderRadius: shape.card, padding: space[4] } : null;
   const body = (
     <View style={[styles.body, center ? styles.center : null]}>
-      <Text style={[type.bodySm, { color: palette['muted-foreground'] }]} numberOfLines={1}>
+      <Text style={[type[labelRole], { color: palette['muted-foreground'] }]} numberOfLines={1}>
         {label}
       </Text>
       {delta ? (

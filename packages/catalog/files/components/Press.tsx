@@ -133,7 +133,8 @@ export default function Press({
       style={outer}
       testID={testID}
     >
-      <Animated.View style={[inner, { transform: [{ scale }] }, disabled ? styles.disabled : null]}>{children}</Animated.View>
+      {/* The press scale joins the caller's transform (a tilted card keeps its rotate) instead of replacing it. */}
+      <Animated.View style={[inner, { transform: [...(Array.isArray(inner.transform) ? inner.transform : []), { scale }] }, disabled ? styles.disabled : null]}>{children}</Animated.View>
     </Pressable>
   );
 }

@@ -51,7 +51,8 @@ export default function StateView({
   const titleColor = tone === 'error' ? palette.destructive : kind === 'block' ? palette.foreground : palette['card-foreground'];
   const action =
     actionLabel !== undefined && onAction !== undefined ? (
-      <Button label={actionLabel} onPress={onAction} variant={tone === 'error' ? 'primary' : 'secondary'} size="md" block={false} />
+      // The way out of the state, so it is the primary action: a secondary fill rested near 1.2:1 on a card (template factory, batch-02).
+      <Button label={actionLabel} onPress={onAction} variant="primary" size="md" block={false} />
     ) : null;
   const mark = (size: number): React.ReactNode =>
     badge !== undefined ? (
