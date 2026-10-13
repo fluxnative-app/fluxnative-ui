@@ -1,0 +1,19 @@
+<!-- fluxnative-ui:craft-index v0.2.0 — hand-maintained; the design rules a model follows after CATALOG.index.md. Versioned with the kit; keep under 4 KB. -->
+## Craft rules — a screen that reads as designed, not generated
+
+Why: App Store Review Guideline 4.3 (spam: look-alike or templated apps) and Google Play's "Spam and Minimum Functionality" policy (repetitive content) reject apps that resemble one another, and users recognise generated UI by its defaults. A template needs an identity of its own; the kit's defaults are a floor, never the look.
+
+1. **Identity.** One mark or wordmark component per template and a `brandName` prop; a name and a description no other template uses. The DNA (`design/brand.tokens.json`) differs from every template in the same category: palette, display type, shape, elevation, motion.
+2. **Palette.** `primary` comes from the brand, never the kit's blue or a purple gradient. One accent at most. Tint, don't flood: big surfaces are `background` and `card`; colour sits on actions and status. Gradients only when the brand is built on them; no pastel wash or glow blobs behind a screen.
+3. **Type.** A real hierarchy: `display` at least 1.6× `body`; one display face, one text face (the system face is fine; the same sans everywhere with 500 weight is a tell). `type.numeric` on prices and stats. Sentence case, no Title Case Everywhere, no exclamation marks.
+4. **Copy.** Product words, not slogans: "Track order", not "Elevate your journey". A headline is the day's fact, not "Good morning, Name". Never "Welcome back!", "Discover", "Seamless", "Effortless", "Unlock", lorem or placeholder text. An empty state says what to do next. Data looks real: names, prices, dates and counts with variance, not 1,234, $99.99 or John Doe.
+5. **Imagery.** The template's own assets or a licensed CDN; never Unsplash, picsum or placeholder hotlinks; no stock-looking hero. No emoji as icons: `Icon` has the table. AI is marked with the brand's own mark (`AiBadge mark`), not sparkles.
+6. **Layout.** Asymmetry where the content asks for it: one hero, then a dense list; not a 2-column grid of identical rounded cards, each with a tinted glyph circle. `layout.gutter` at the edges, section rhythm from `space`, density from the brand.
+7. **Shape and depth.** Radii only from `shape` roles; one `elevation` level per surface class; hairline borders. Never a shadowed card inside a shadowed card.
+8. **Motion.** `Reveal` for entrances, `Press` for touch, springs from the interaction profile. Not everything bounces. Reduce Motion is respected (the recipes do it).
+9. **States.** Every screen renders live, loading, empty and error (plus streaming and quota for AI), in both schemes unless the brand locks one. Each state is designed; a spinner in the middle is not a loading state.
+10. **Platform.** iOS: chevron back, large title on a root screen, grouped inset lists (`ListGroup`). Android: arrow back, Material bar. Both: 44 px targets, contrast 4.5:1 for text and 3:1 for icons, borders and a control's resting fill (never fade a resting button to say "nothing to send", nor a locked field whose placeholder says why: `SearchField readOnly`, `Composer disabled`), a name on every icon-only control, text rows without fixed heights so Dynamic Type survives.
+11. **Chrome.** `ScreenHeader` for the top row; tabs are `TabBar` with a label on every tab (host chrome once `flux/navigation` draws tabs), never a hand-drawn tab bar.
+12. **Review readiness.** At least three real screens with navigation between them; name, mark and copy belong to one brand; no real brand names (`tool/brand-denylist.json`); a camera or AI flow explains why before it asks.
+
+Checked by `python3 tool/check_craft.py` in fluxbuilder-template (rules 1, 4, 5, 9, 12 and the distinctiveness metric); the judges and the human reviewer cover the rest. Rationale, the store policies and the metric: `docs/topics/craft.md`.

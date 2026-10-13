@@ -1,0 +1,1163 @@
+{
+  "$comment": "Hand-maintained metadata per catalog component: when to use it, the screen archetypes it serves, the hand-written names it replaces in the template catalog (aliases), and the evidence it was shaped from. `fluxnative-catalog registry` merges it with the props read from the sources into registry.json. Every component needs an entry (catalog.test.ts checks).",
+  "AiBadge": {
+    "since": "0.1.0",
+    "use": "Label content a model produced: a result card, a generated image, a summary.",
+    "archetypes": [
+      "ai-chat",
+      "ai-generate",
+      "ai-insight",
+      "ai-scan"
+    ],
+    "aliases": [
+      "AiTag",
+      "GeneratedBadge"
+    ],
+    "evidence": {
+      "note": "AI pack v0 (docs/topics/ai.md), 6 hand-drawn AI templates before it"
+    }
+  },
+  "Avatar": {
+    "since": "0.2.0",
+    "use": "A person or brand in a list row, a header, a message, a card: photo, else initials on a palette tone; a presence dot when the app has presence.",
+    "archetypes": [
+      "profile",
+      "social",
+      "community",
+      "messaging",
+      "settings",
+      "home-feeds"
+    ],
+    "aliases": [
+      "Avatar",
+      "UserAvatar",
+      "Initials",
+      "ProfilePhoto"
+    ],
+    "evidence": {
+      "templates": 14,
+      "note": "14 templates draw avatars or initials by hand (grep Avatar|initials)"
+    },
+    "mobbin": [
+      {
+        "app": "LinkedIn",
+        "screen": "https://mobbin.com/screens/10d4b6f2-6519-4bc2-8445-84e1c16f5512"
+      },
+      {
+        "app": "Luma",
+        "screen": "https://mobbin.com/screens/d26a9817-e7cf-4446-8b58-8e4f4412611c"
+      },
+      {
+        "app": "Tolan",
+        "screen": "https://mobbin.com/screens/7a4b9e30-4eac-4f62-9821-379eec182b26"
+      }
+    ],
+    "indexOmit": [
+      "tone"
+    ]
+  },
+  "BottomBar": {
+    "since": "0.2.0",
+    "use": "The pinned action bar under a product, cart, booking or form screen: one or two buttons, a stepper or price beside them, a total above them.",
+    "archetypes": [
+      "content-detail",
+      "cart-checkout",
+      "orders-billing",
+      "paywall",
+      "crud",
+      "select-input"
+    ],
+    "aliases": [
+      "ActionBar",
+      "CheckoutBar",
+      "StickyFooter",
+      "CtaBar"
+    ],
+    "evidence": {
+      "templates": 27,
+      "note": "the pinned CTA under product and cart screens of the 27 shopping templates, each drawn by hand"
+    },
+    "mobbin": [
+      {
+        "app": "Blue Apron",
+        "screen": "https://mobbin.com/screens/e54edcf8-8c03-4b63-b446-e628ac634d9a"
+      },
+      {
+        "app": "Fresha",
+        "screen": "https://mobbin.com/screens/831cf122-45a9-4fba-afde-af4532c1857c"
+      },
+      {
+        "app": "Shop",
+        "screen": "https://mobbin.com/screens/97f73a42-e077-4ca7-807d-fec4f80c02d8"
+      }
+    ],
+    "indexOmit": [
+      "arrange"
+    ]
+  },
+  "Button": {
+    "since": "0.1.0",
+    "use": "Every text button: the screen CTA (xl), the bottom-bar pill (lg), inline actions (md, sm). Variants are the whole palette of fills.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "CtaButton",
+      "PillButton",
+      "PrimaryPlate",
+      "GradientPill",
+      "BagButton",
+      "Cta"
+    ],
+    "evidence": {
+      "templates": 10,
+      "note": "CtaButton 10 copies, PillButton 2, PrimaryPlate 2 (A3.3)"
+    }
+  },
+  "Chip": {
+    "since": "0.1.0",
+    "use": "A filter or option pill, a size circle, a swatch; selected is inverted.",
+    "archetypes": [
+      "filter-sort",
+      "search",
+      "select-input",
+      "content-detail",
+      "home-feeds"
+    ],
+    "aliases": [
+      "Chip",
+      "CategoryChip",
+      "FilterChip",
+      "SizeBoxes",
+      "Pill"
+    ],
+    "evidence": {
+      "templates": 10,
+      "note": "Chip 6, CategoryChip 2, FilterChip 2 hand-written copies"
+    },
+    "indexOmit": [
+      "struck"
+    ]
+  },
+  "Composer": {
+    "since": "0.1.0",
+    "use": "The message field of a chat screen, with send / stop in one button, above the keyboard.",
+    "archetypes": [
+      "ai-chat",
+      "messaging"
+    ],
+    "aliases": [
+      "ChatInput",
+      "MessageComposer",
+      "PromptBar"
+    ],
+    "evidence": {
+      "note": "AI pack v0"
+    }
+  },
+  "Divider": {
+    "since": "0.2.0",
+    "use": "A hairline between rows or sections; inset inside lists; vertical between stats.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "Divider",
+      "Hairline",
+      "Rule",
+      "Separator"
+    ],
+    "evidence": {
+      "templates": 40,
+      "note": "40 templates draw hairlines by hand (grep Divider|hairline)"
+    },
+    "mobbin": [
+      {
+        "app": "Copilot",
+        "screen": "https://mobbin.com/screens/59bb9a40-9c88-47fb-a603-af80be44600c"
+      },
+      {
+        "app": "Ro",
+        "screen": "https://mobbin.com/screens/9ff8b962-a77d-4c7c-bc21-ed682a658011"
+      }
+    ]
+  },
+  "Icon": {
+    "since": "0.1.0",
+    "use": "Every glyph: one closed table of names (`ICONS`), 2 px round stroke on a 24-unit grid, `filled` for a selected state; never a hand-drawn Svg.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "Icons",
+      "Icon",
+      "Glyph",
+      "BrandIcons",
+      "SvgIcon"
+    ],
+    "evidence": {
+      "templates": 39,
+      "categories": 15,
+      "note": "Icons 39 copies in 15 categories, BrandIcons 2"
+    }
+  },
+  "IconButton": {
+    "since": "0.1.0",
+    "use": "A round icon-only control: header actions, hearts, close, add; badges and dots for counts.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "CircleButton",
+      "RoundButton",
+      "SquareButton",
+      "GlassIconButton",
+      "IconButton",
+      "Fab"
+    ],
+    "evidence": {
+      "templates": 22,
+      "note": "CircleButton 8, IconButton 5, SquareButton 4, RoundButton 3, GlassIconButton 2"
+    }
+  },
+  "ListGroup": {
+    "since": "0.2.0",
+    "use": "Settings and menu groups: a caps title, rows on one card with inset rules, a footer line.",
+    "archetypes": [
+      "settings",
+      "profile",
+      "permissions",
+      "notifications",
+      "orders-billing",
+      "utilities"
+    ],
+    "aliases": [
+      "SettingsGroup",
+      "MenuSection",
+      "InsetGroup",
+      "ListSection"
+    ],
+    "evidence": {
+      "templates": 29,
+      "note": "29 templates lay out settings or menu rows by hand (grep ListRow|SettingsRow|Row)"
+    },
+    "mobbin": [
+      {
+        "app": "Copilot",
+        "screen": "https://mobbin.com/screens/59bb9a40-9c88-47fb-a603-af80be44600c"
+      },
+      {
+        "app": "Pool",
+        "screen": "https://mobbin.com/screens/497e9661-5a61-46d2-8a4d-227395d5b0c2"
+      }
+    ]
+  },
+  "ListRow": {
+    "since": "0.2.0",
+    "use": "One settings, menu or detail row: icon, title and subtitle, a value, a chevron or a Toggle.",
+    "archetypes": [
+      "settings",
+      "profile",
+      "permissions",
+      "notifications",
+      "orders-billing",
+      "utilities",
+      "crud"
+    ],
+    "aliases": [
+      "ListRow",
+      "SettingsRow",
+      "MenuRow",
+      "Cell",
+      "OptionRow",
+      "NavMenu"
+    ],
+    "evidence": {
+      "templates": 29,
+      "note": "29 templates (rows by hand), 12 with chevron-right rows, 3 NavMenu copies"
+    },
+    "mobbin": [
+      {
+        "app": "Copilot",
+        "screen": "https://mobbin.com/screens/59bb9a40-9c88-47fb-a603-af80be44600c"
+      },
+      {
+        "app": "Pool",
+        "screen": "https://mobbin.com/screens/497e9661-5a61-46d2-8a4d-227395d5b0c2"
+      },
+      {
+        "app": "Ro",
+        "screen": "https://mobbin.com/screens/9ff8b962-a77d-4c7c-bc21-ed682a658011"
+      }
+    ]
+  },
+  "MessageList": {
+    "since": "0.1.0",
+    "use": "The conversation of a chat screen, anchored to the bottom, following a streaming reply.",
+    "archetypes": [
+      "ai-chat",
+      "messaging"
+    ],
+    "aliases": [
+      "ChatList",
+      "Thread",
+      "MessageThread"
+    ],
+    "evidence": {
+      "note": "AI pack v0"
+    }
+  },
+  "Notice": {
+    "since": "0.2.0",
+    "use": "An inline message inside content: a promo, a warning, a success line, an error, with one action or a dismiss. Not for empty or error screens (StateView).",
+    "archetypes": [
+      "cart-checkout",
+      "orders-billing",
+      "promotions",
+      "feedback",
+      "settings",
+      "authentication",
+      "ai-insight"
+    ],
+    "aliases": [
+      "Notice",
+      "StateNotice",
+      "Banner",
+      "InfoBanner",
+      "Alert",
+      "Callout"
+    ],
+    "evidence": {
+      "templates": 12,
+      "categories": 7,
+      "note": "StateNotice 9 copies in 7 categories, Notice 3 in 3"
+    },
+    "mobbin": [
+      {
+        "app": "Blue Apron",
+        "screen": "https://mobbin.com/screens/e54edcf8-8c03-4b63-b446-e628ac634d9a"
+      },
+      {
+        "app": "Rodeo",
+        "screen": "https://mobbin.com/screens/c18c89ae-1cae-47d0-a298-1caba0ced501"
+      }
+    ]
+  },
+  "PageDots": {
+    "since": "0.2.0",
+    "use": "The page indicator of an onboarding pager, a hero carousel or a product gallery.",
+    "archetypes": [
+      "onboarding",
+      "guided-tours",
+      "content-detail",
+      "promotions",
+      "home-feeds"
+    ],
+    "aliases": [
+      "Pager",
+      "Dots",
+      "PageIndicator",
+      "PagerDots"
+    ],
+    "evidence": {
+      "templates": 30,
+      "note": "pager dots drawn by hand across about 30 templates (grep dots|pager)"
+    },
+    "mobbin": [
+      {
+        "app": "Pool",
+        "screen": "https://mobbin.com/screens/939efe40-6edd-423a-bb44-1a7b8f4cc1e4"
+      },
+      {
+        "app": "Mindtrip",
+        "screen": "https://mobbin.com/screens/b4c10274-a959-4381-9e02-7ce071d01a67"
+      },
+      {
+        "app": "Bumble",
+        "screen": "https://mobbin.com/screens/ff1dc5db-0596-4185-8c14-93619a9d8101"
+      }
+    ]
+  },
+  "Photo": {
+    "since": "0.2.0",
+    "use": "Any remote picture in content: product, cover, avatar well, hero. Loads behind a skeleton, falls back on error, takes an overlay.",
+    "archetypes": [
+      "home-feeds",
+      "content-detail",
+      "media-playback",
+      "social",
+      "promotions",
+      "ai-generate"
+    ],
+    "aliases": [
+      "Photo",
+      "ShoePhoto",
+      "RemoteImage",
+      "Cover",
+      "Thumb"
+    ],
+    "evidence": {
+      "templates": 35,
+      "categories": 3,
+      "note": "Photo 5 copies in 3 categories, ShoePhoto 3; 35 templates load remote images with onLoad/onError by hand"
+    },
+    "mobbin": [
+      {
+        "app": "Blue Apron",
+        "screen": "https://mobbin.com/screens/e54edcf8-8c03-4b63-b446-e628ac634d9a"
+      },
+      {
+        "app": "Cash App",
+        "screen": "https://mobbin.com/screens/77a9fc95-d603-47b4-8fd3-66972d2be856"
+      }
+    ],
+    "indexOmit": [
+      "placeholder"
+    ]
+  },
+  "Press": {
+    "since": "0.1.0",
+    "use": "The one pressable under every custom control: scale, haptic, a required name.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "Press",
+      "ScalePress",
+      "PressScale",
+      "Tappable",
+      "Bounce"
+    ],
+    "evidence": {
+      "templates": 32,
+      "categories": 12,
+      "note": "Press 32 copies in 12 categories"
+    }
+  },
+  "ProductCard": {
+    "since": "0.1.0",
+    "use": "A product in a grid or rail: image well, name, price with the old price struck, a heart.",
+    "archetypes": [
+      "home-feeds",
+      "search",
+      "filter-sort",
+      "promotions",
+      "cart-checkout"
+    ],
+    "aliases": [
+      "ProductCard",
+      "ProductTile",
+      "ShoeCard",
+      "CollectionCard",
+      "ItemCard"
+    ],
+    "evidence": {
+      "templates": 14,
+      "note": "ProductCard 8, ProductTile 4, ShoeCard 2 (A3.3 recipe 6)"
+    }
+  },
+  "ProgressBar": {
+    "since": "0.2.0",
+    "use": "Goal completion, a course or a step count, an upload: a track with a run, label and value above.",
+    "archetypes": [
+      "dashboards",
+      "learning",
+      "onboarding",
+      "ai-generate",
+      "orders-billing",
+      "utilities"
+    ],
+    "aliases": [
+      "ProgressBar",
+      "Progress",
+      "GoalBar",
+      "Meter"
+    ],
+    "evidence": {
+      "templates": 27,
+      "note": "27 templates draw progress by hand (grep progress)"
+    },
+    "mobbin": [
+      {
+        "app": "Tolan",
+        "screen": "https://mobbin.com/screens/7a4b9e30-4eac-4f62-9821-379eec182b26"
+      }
+    ],
+    "indexOmit": [
+      "height"
+    ]
+  },
+  "Rating": {
+    "since": "0.2.0",
+    "use": "Stars with a value and count on a product, a place, a review; an input when the user rates.",
+    "archetypes": [
+      "content-detail",
+      "feedback",
+      "social",
+      "orders-billing",
+      "search"
+    ],
+    "aliases": [
+      "Rating",
+      "Stars",
+      "StarRow",
+      "ReviewStars"
+    ],
+    "evidence": {
+      "templates": 12,
+      "note": "Rating 3 copies; 12 templates draw stars by hand"
+    },
+    "mobbin": [
+      {
+        "app": "Shop",
+        "screen": "https://mobbin.com/screens/3931e59a-b866-467a-a54d-3ccce8f6f2c3"
+      }
+    ]
+  },
+  "Reveal": {
+    "since": "0.1.0",
+    "use": "An entrance for lists and cards: fade and rise once, staggered by index.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "Reveal",
+      "FadeIn",
+      "Fade",
+      "Appear",
+      "Stagger",
+      "Entrance"
+    ],
+    "evidence": {
+      "templates": 37,
+      "categories": 14,
+      "note": "Reveal 37 copies in 14 categories, Fade 5"
+    }
+  },
+  "ScanFrame": {
+    "since": "0.1.0",
+    "use": "The viewfinder of a scan screen: corners and a scan line over the camera or a photo.",
+    "archetypes": [
+      "ai-scan",
+      "media-capture"
+    ],
+    "aliases": [
+      "Viewfinder",
+      "ScanOverlay",
+      "CameraFrame"
+    ],
+    "evidence": {
+      "note": "AI pack v0; dewly-skin-scan"
+    }
+  },
+  "ScreenHeader": {
+    "since": "0.2.0",
+    "use": "The top row of a screen the template owns: back, title, trailing actions; a large title on a root screen.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "ScreenShell",
+      "ScreenHeader",
+      "Header",
+      "NavBar",
+      "TopBar",
+      "SafeFrame"
+    ],
+    "evidence": {
+      "templates": 13,
+      "categories": 5,
+      "note": "ScreenShell 5 copies in 5 categories, ScreenHeader 4 in 3, Header 4"
+    },
+    "mobbin": [
+      {
+        "app": "Luma",
+        "screen": "https://mobbin.com/screens/d26a9817-e7cf-4446-8b58-8e4f4412611c"
+      },
+      {
+        "app": "Pool",
+        "screen": "https://mobbin.com/screens/939efe40-6edd-423a-bb44-1a7b8f4cc1e4"
+      },
+      {
+        "app": "Bumble",
+        "screen": "https://mobbin.com/screens/ff1dc5db-0596-4185-8c14-93619a9d8101"
+      }
+    ]
+  },
+  "Scrim": {
+    "since": "0.1.0",
+    "use": "The dimming layer under a Sheet or over media; tap to close.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "Scrim",
+      "Backdrop",
+      "Overlay"
+    ],
+    "evidence": {
+      "templates": 6,
+      "categories": 5,
+      "note": "Scrim 6 copies in 5 categories"
+    }
+  },
+  "SearchField": {
+    "since": "0.2.0",
+    "use": "The search box at the top of a list or a search screen: glyph, field, clear, optional Cancel.",
+    "archetypes": [
+      "search",
+      "filter-sort",
+      "home-feeds",
+      "maps",
+      "messaging"
+    ],
+    "aliases": [
+      "SearchPill",
+      "SearchBar",
+      "SearchBox",
+      "SearchInput"
+    ],
+    "evidence": {
+      "templates": 36,
+      "categories": 3,
+      "note": "SearchPill 4 copies in 3 categories; 36 templates wire a TextInput by hand"
+    },
+    "mobbin": [
+      {
+        "app": "Shopify",
+        "screen": "https://mobbin.com/screens/904d082d-43f9-44c5-b3ed-97d26af9bad2"
+      },
+      {
+        "app": "Public",
+        "screen": "https://mobbin.com/screens/d01650bf-c9fc-4f0f-99e8-899ea5d8ae77"
+      },
+      {
+        "app": "Tripadvisor",
+        "screen": "https://mobbin.com/screens/99e543c5-f7b1-4a48-a8a8-0abc05c1e642"
+      }
+    ],
+    "indexOmit": [
+      "autoFocus"
+    ]
+  },
+  "SectionHeader": {
+    "since": "0.1.0",
+    "use": "A list section's title row with an eyebrow and a 'See all' action.",
+    "archetypes": [
+      "home-feeds",
+      "content-detail",
+      "dashboards",
+      "promotions",
+      "learning"
+    ],
+    "aliases": [
+      "SectionHeader",
+      "SectionHead",
+      "SectionTitle",
+      "SectionHeading"
+    ],
+    "evidence": {
+      "templates": 2,
+      "note": "SectionHead 2 copies; most templates inline the row"
+    }
+  },
+  "SegmentedControl": {
+    "since": "0.2.0",
+    "use": "Two to five exclusive views on one screen: upcoming / past, all / selected, week / month.",
+    "archetypes": [
+      "orders-billing",
+      "dashboards",
+      "filter-sort",
+      "content-detail",
+      "social",
+      "utilities"
+    ],
+    "aliases": [
+      "Segmented",
+      "SegmentedControl",
+      "Tabs",
+      "TabSwitch",
+      "Toggle Tabs"
+    ],
+    "evidence": {
+      "templates": 11,
+      "note": "11 templates draw segmented tabs by hand (grep segment)"
+    },
+    "mobbin": [
+      {
+        "app": "Luma",
+        "screen": "https://mobbin.com/screens/f959fe82-8c3e-4bc0-9ad1-6a289eac3845"
+      },
+      {
+        "app": "Brink",
+        "screen": "https://mobbin.com/screens/51b4a643-6f0c-4c9b-8b01-ee7027bad3c1"
+      },
+      {
+        "app": "Perplexity",
+        "screen": "https://mobbin.com/screens/c67001cd-84ea-4f31-8a2f-f980f06e1932"
+      }
+    ]
+  },
+  "Sheet": {
+    "since": "0.1.0",
+    "use": "A bottom sheet inside the screen: filters, a size picker, the bag, options.",
+    "archetypes": [
+      "filter-sort",
+      "select-input",
+      "cart-checkout",
+      "content-detail",
+      "crud"
+    ],
+    "aliases": [
+      "Sheet",
+      "BottomSheet",
+      "SizeSheet",
+      "BagSheet",
+      "NotificationsSheet",
+      "Drawer"
+    ],
+    "evidence": {
+      "templates": 23,
+      "note": "Sheet 14, BottomSheet 4, NotificationsSheet 3, SizeSheet 2, BagSheet 2"
+    }
+  },
+  "Skeleton": {
+    "since": "0.1.0",
+    "use": "The loading placeholder for any block of content.",
+    "archetypes": [
+      "loading",
+      "*"
+    ],
+    "aliases": [
+      "Skeleton",
+      "SkeletonShimmer",
+      "Shimmer",
+      "Placeholder"
+    ],
+    "evidence": {
+      "templates": 37,
+      "categories": 13,
+      "note": "SkeletonShimmer 33 copies in 13 categories, Skeleton 4"
+    }
+  },
+  "SkeletonRows": {
+    "since": "0.3.0",
+    "use": "A list or feed while it loads: rows of an avatar or thumbnail and text bars, sized like the rows to come, one 'Loading' element for a screen reader.",
+    "archetypes": [
+      "loading",
+      "home-feeds",
+      "search",
+      "messaging",
+      "orders-billing"
+    ],
+    "aliases": [
+      "SkeletonRows",
+      "SkeletonList",
+      "ListSkeleton",
+      "LoadingRows",
+      "SkeletonRow",
+      "RowSkeleton"
+    ],
+    "evidence": {
+      "templates": 17,
+      "note": "fluxnative-catalog learn over fluxbuilder-template, October 2026: the shape View(Skeleton, Skeleton, Skeleton) in 17 templates across 6 categories (32 places), the top recipe candidate; 13 more stack four bars"
+    },
+    "mobbin": [
+      {
+        "app": "Instagram",
+        "screen": "https://mobbin.com/screens/08f3f7be-088d-4977-8867-50c10465950c"
+      },
+      {
+        "app": "Spotify Kids",
+        "screen": "https://mobbin.com/screens/071f97bd-3d7f-4812-8a3d-97f7e6fc86e9"
+      },
+      {
+        "app": "ChatGPT",
+        "screen": "https://mobbin.com/screens/54dec487-85ad-42f4-988c-34844c7322fa"
+      },
+      {
+        "app": "talabat",
+        "screen": "https://mobbin.com/screens/c2ce6bf5-3ae0-4250-9ce4-9a3f9e2eb369"
+      },
+      {
+        "app": "Quizlet",
+        "screen": "https://mobbin.com/screens/2e62d572-9596-42dc-9c15-121a0b8d489f"
+      },
+      {
+        "app": "Wise",
+        "screen": "https://mobbin.com/screens/23814fae-967d-4436-958b-1528dbd1626a"
+      }
+    ]
+  },
+  "Snackbar": {
+    "since": "0.1.0",
+    "use": "A short message with one action over the bottom of the screen ('Removed · Undo').",
+    "archetypes": [
+      "cart-checkout",
+      "crud",
+      "feedback",
+      "notifications",
+      "*"
+    ],
+    "aliases": [
+      "Snackbar",
+      "Toast",
+      "UndoBar"
+    ],
+    "evidence": {
+      "templates": 15,
+      "note": "Snackbar 15 copies, 12 with the same props (A3.3 recipe 3)"
+    },
+    "indexOmit": [
+      "duration"
+    ]
+  },
+  "StateView": {
+    "since": "0.1.0",
+    "use": "Empty, error and offline states of a screen or a list section.",
+    "archetypes": [
+      "error-empty",
+      "*"
+    ],
+    "aliases": [
+      "StateBlock",
+      "StateView",
+      "EmptyState",
+      "ErrorState",
+      "OfflineView",
+      "EmptyBlock"
+    ],
+    "evidence": {
+      "templates": 24,
+      "categories": 3,
+      "note": "StateBlock 24 copies in 3 categories (A3.3 recipe 4)"
+    }
+  },
+  "StatTile": {
+    "since": "0.3.0",
+    "use": "One number that matters: a label, the value in tabular figures with a unit, a change chip coloured by trend, a caption; tiles side by side in a row.",
+    "archetypes": [
+      "dashboards",
+      "profile",
+      "learning",
+      "utilities"
+    ],
+    "aliases": [
+      "Stat",
+      "StatTile",
+      "StatCard",
+      "StatBlock",
+      "Metric",
+      "MetricCard",
+      "KpiTile"
+    ],
+    "evidence": {
+      "templates": 8,
+      "note": "a local Stat component in 8 templates (profiles, dashboards, product detail); the shape View(Stat, Stat, Stat) in 4 templates across health and commerce"
+    },
+    "mobbin": [
+      {
+        "app": "Substack",
+        "screen": "https://mobbin.com/screens/f1eb1a2d-1718-40d7-bd68-7a1ac06d3a55"
+      },
+      {
+        "app": "Google Health (Fitbit)",
+        "screen": "https://mobbin.com/screens/deab278c-e236-43ff-9ab2-bf907093f95e"
+      },
+      {
+        "app": "Tonal",
+        "screen": "https://mobbin.com/screens/b797b14b-4e58-4152-8900-e03d45b69492"
+      },
+      {
+        "app": "MacroFactor",
+        "screen": "https://mobbin.com/screens/dbb6adbe-687b-4528-aba0-21f9af8c1e6d"
+      },
+      {
+        "app": "pushr",
+        "screen": "https://mobbin.com/screens/a5c74235-e040-49f2-8fb9-b9211e04c157"
+      }
+    ],
+    "indexOmit": [
+      "align"
+    ]
+  },
+  "Stepper": {
+    "since": "0.2.0",
+    "use": "A quantity in a cart row, a product page, a booking (guests, nights).",
+    "archetypes": [
+      "cart-checkout",
+      "content-detail",
+      "select-input",
+      "orders-billing",
+      "crud"
+    ],
+    "aliases": [
+      "Stepper",
+      "QtyStepper",
+      "QuantityStepper",
+      "Counter",
+      "PlusMinus"
+    ],
+    "evidence": {
+      "templates": 31,
+      "note": "Stepper 4 copies, QtyStepper as a composition (kova-fashion); 31 templates count quantities by hand"
+    },
+    "mobbin": [
+      {
+        "app": "Blue Apron",
+        "screen": "https://mobbin.com/screens/e54edcf8-8c03-4b63-b446-e628ac634d9a"
+      },
+      {
+        "app": "Fresha",
+        "screen": "https://mobbin.com/screens/831cf122-45a9-4fba-afde-af4532c1857c"
+      },
+      {
+        "app": "Shop",
+        "screen": "https://mobbin.com/screens/3931e59a-b866-467a-a54d-3ccce8f6f2c3"
+      }
+    ],
+    "indexOmit": [
+      "format"
+    ]
+  },
+  "StreamingText": {
+    "since": "0.1.0",
+    "use": "A model's reply as it arrives: a caret, minimal Markdown, one screen-reader announcement.",
+    "archetypes": [
+      "ai-chat",
+      "ai-insight",
+      "ai-generate"
+    ],
+    "aliases": [
+      "Typewriter",
+      "StreamText",
+      "TypingText"
+    ],
+    "evidence": {
+      "note": "AI pack v0"
+    }
+  },
+  "TabBar": {
+    "since": "0.4.0",
+    "use": "The tabs at the foot of an app: two to five destinations, one current, as an inset floating capsule (iOS 26) or a full-width bar (Material 3, classic iOS); a round action beside it or raised between the tabs. The one tab bar a template draws until the host has tab chrome.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "TabBar",
+      "TabDock",
+      "Dock",
+      "NavDock",
+      "BottomDock",
+      "BottomTabBar",
+      "BottomTabs",
+      "BottomNav",
+      "FloatingTabBar",
+      "PillDock",
+      "ModeDock",
+      "TabPill",
+      "BottomGlassTabs"
+    ],
+    "evidence": {
+      "templates": 53,
+      "note": "53 hand-drawn tab bars in the 72-template catalog (TabBar 23, TabDock 12, Dock 3, 15 other names): 29 floating capsules and 24 edge bars, 32 with four tabs, 31 marking the current tab with a shape behind it, 6 with a centre action; 15 got the tablist, tab or selected roles wrong"
+    },
+    "mobbin": [
+      {
+        "app": "TIDE",
+        "screen": "https://mobbin.com/screens/3a6e3571-22fe-4659-80ac-7249374e4947"
+      },
+      {
+        "app": "GitHub",
+        "screen": "https://mobbin.com/screens/17d21124-bffc-40c2-9aa5-b01e381d217e"
+      },
+      {
+        "app": "Fresha",
+        "screen": "https://mobbin.com/screens/4896d295-e23e-4adc-8b6c-75767d1058a1"
+      },
+      {
+        "app": "Craft",
+        "screen": "https://mobbin.com/screens/2a6e4efc-8dde-4efa-ba2c-eb27267ee582"
+      },
+      {
+        "app": "Strava",
+        "screen": "https://mobbin.com/screens/3c677746-b6dd-483a-a4f3-cef1880e8fb0"
+      },
+      {
+        "app": "Docusign",
+        "screen": "https://mobbin.com/screens/97cf44d9-c61a-4b69-8832-b504883f3ca6"
+      }
+    ],
+    "indexOmit": [
+      "onReselect",
+      "haptic",
+      "overlay",
+      "bottom"
+    ]
+  },
+  "TextField": {
+    "since": "0.2.0",
+    "use": "Every form field: sign in, sign up, address, payment, profile; the kind picks the keyboard.",
+    "archetypes": [
+      "authentication",
+      "crud",
+      "cart-checkout",
+      "profile",
+      "settings",
+      "select-input",
+      "feedback"
+    ],
+    "aliases": [
+      "TextField",
+      "Input",
+      "FormField",
+      "LabeledInput",
+      "PasswordField"
+    ],
+    "evidence": {
+      "templates": 36,
+      "note": "36 templates wire TextInput by hand in 51 files"
+    },
+    "mobbin": [
+      {
+        "app": "Lloyds Mobile Banking",
+        "screen": "https://mobbin.com/screens/faacc6f4-3264-4554-9cfe-d2ff680ec764"
+      },
+      {
+        "app": "Polarsteps",
+        "screen": "https://mobbin.com/screens/2436d965-197a-4d13-b10f-e6370bf6a7e5"
+      },
+      {
+        "app": "Opera",
+        "screen": "https://mobbin.com/screens/2187da35-3149-4e62-b0cb-339b6038b201"
+      }
+    ]
+  },
+  "Toggle": {
+    "since": "0.1.0",
+    "use": "An on/off switch in a settings row or a filter.",
+    "archetypes": [
+      "settings",
+      "permissions",
+      "notifications",
+      "filter-sort"
+    ],
+    "aliases": [
+      "Toggle",
+      "Switch",
+      "Checkbox"
+    ],
+    "evidence": {
+      "templates": 11,
+      "categories": 2,
+      "note": "Toggle 11 copies, 9 with the same props (A3.3 recipe 2); Checkbox 2"
+    }
+  },
+  "aiState": {
+    "since": "0.1.0",
+    "use": "The pure chat and task state machines behind useAiChat and useAiTask.",
+    "archetypes": [
+      "ai-chat",
+      "ai-generate",
+      "ai-scan"
+    ],
+    "aliases": [],
+    "evidence": {
+      "note": "AI pack v0"
+    }
+  },
+  "markdown": {
+    "since": "0.1.0",
+    "use": "The minimal Markdown reader behind StreamingText.",
+    "archetypes": [
+      "ai-chat"
+    ],
+    "aliases": [],
+    "evidence": {
+      "note": "AI pack v0"
+    }
+  },
+  "useAiChat": {
+    "since": "0.1.0",
+    "use": "A conversation over the host's ai.chat with streaming, stop, retry.",
+    "archetypes": [
+      "ai-chat"
+    ],
+    "aliases": [
+      "useChat",
+      "useAssistant"
+    ],
+    "evidence": {
+      "note": "AI pack v0"
+    }
+  },
+  "useAiTask": {
+    "since": "0.1.0",
+    "use": "One AI call at a time with progress and cancel: describe a photo, generate images, transcribe.",
+    "archetypes": [
+      "ai-scan",
+      "ai-generate",
+      "ai-voice",
+      "ai-insight"
+    ],
+    "aliases": [
+      "useGenerate",
+      "useScan"
+    ],
+    "evidence": {
+      "note": "AI pack v0"
+    }
+  },
+  "useCountUp": {
+    "since": "0.1.0",
+    "use": "A headline figure that counts up to its value.",
+    "archetypes": [
+      "dashboards",
+      "orders-billing",
+      "learning"
+    ],
+    "aliases": [
+      "useCountUp",
+      "useAnimatedNumber",
+      "useCounter"
+    ],
+    "evidence": {
+      "templates": 27,
+      "categories": 9,
+      "note": "useCountUp 27 copies in 9 categories, 3 variants of one signature (A3.3 recipe 1)"
+    }
+  },
+  "useCountdown": {
+    "since": "0.2.0",
+    "use": "Time left until a moment: a sale's end, a booking hold, an OTP resend.",
+    "archetypes": [
+      "promotions",
+      "cart-checkout",
+      "authentication",
+      "orders-billing"
+    ],
+    "aliases": [
+      "useCountdown",
+      "useTimer",
+      "useSaleTimer"
+    ],
+    "evidence": {
+      "templates": 6,
+      "note": "useCountdown 3 copies; 6 templates run a countdown by hand"
+    }
+  },
+  "useReducedMotion": {
+    "since": "0.1.0",
+    "use": "Whether the OS asks for less motion; every animated recipe reads it.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "useReduceMotion",
+      "usePrefersReducedMotion"
+    ],
+    "evidence": {
+      "note": "every template with motion needs it"
+    }
+  }
+}

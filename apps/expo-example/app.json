@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "FluxNative UI",
+    "slug": "fluxnative-ui-example",
+    "scheme": "fluxnativeui",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.inspireui.fluxnativeui.example",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.inspireui.fluxnativeui.example",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "./plugins/withSceneLifecycle"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

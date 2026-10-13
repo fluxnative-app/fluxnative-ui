@@ -1,0 +1,65 @@
+{
+  "name": "@fluxnative/glass",
+  "version": "0.0.0",
+  "description": "The FluxNative UI glass ladder: native Liquid Glass, blur, translucent or opaque — chosen per device and accessibility settings.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fluxnative-app/fluxnative-ui.git",
+    "directory": "packages/glass"
+  },
+  "homepage": "https://github.com/fluxnative-app/fluxnative-ui#readme",
+  "bugs": "https://github.com/fluxnative-app/fluxnative-ui/issues",
+  "type": "module",
+  "main": "src/index.ts",
+  "react-native": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./expo": "./src/expo.tsx",
+    "./hosts/*": "./hosts/*",
+    "./contract": "./src/contract.ts"
+  },
+  "files": [
+    "src",
+    "hosts",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
+    "!src/**/__tests__"
+  ],
+  "sideEffects": [
+    "./src/expo.tsx"
+  ],
+  "scripts": {
+    "test": "node --test src/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.hosts.json",
+    "build": "node src/build-hosts.ts",
+    "check": "node src/build-hosts.ts --check"
+  },
+  "dependencies": {
+    "@fluxnative/tokens": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo-blur": ">=57",
+    "expo-glass-effect": ">=57",
+    "react": ">=19",
+    "react-native": ">=0.84"
+  },
+  "peerDependenciesMeta": {
+    "expo-blur": {
+      "optional": true
+    },
+    "expo-glass-effect": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "~19.2.2",
+    "expo-blur": "~57.0.3",
+    "expo-glass-effect": "~57.0.4",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "typescript": "~6.0.3"
+  }
+}
