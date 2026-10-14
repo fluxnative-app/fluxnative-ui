@@ -834,7 +834,10 @@
       "templates": 24,
       "categories": 3,
       "note": "StateBlock 24 copies in 3 categories (A3.3 recipe 4)"
-    }
+    },
+    "indexOmit": [
+      "titleRole"
+    ]
   },
   "StatTile": {
     "since": "0.3.0",

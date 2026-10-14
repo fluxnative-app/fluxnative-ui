@@ -58,3 +58,13 @@ test('ProgressBar indeterminate under Reduce Motion: a still run in the middle, 
   const run = styleOf(allOf(still.view, 'Animated.View')[0] as View);
   assert.deepEqual([run.left, run.width], ['35%', '30%']);
 });
+
+test("StateView titleRole sets the block title in the brand's role, as the role is (parlora's fork: headline in Georgia)", () => {
+  const voiced = draw('components/StateView.tsx', { title: 'No rooms yet', titleRole: 'headline' });
+  const title = allOf(voiced.view, 'Text')[0] as View;
+  assert.deepEqual([styleOf(title).fontSize, styleOf(title).lineHeight], [tokens.type.headline?.fontSize, tokens.type.headline?.lineHeight]);
+  const plain = draw('components/StateView.tsx', { title: 'No rooms yet' });
+  assert.equal(styleOf(allOf(plain.view, 'Text')[0] as View).fontSize, 18, 'the 18/28 title by default');
+  const banner = draw('components/StateView.tsx', { title: 'Offline', titleRole: 'headline', inline: true });
+  assert.notEqual(styleOf(allOf(banner.view, 'Text')[0] as View).fontSize, tokens.type.headline?.fontSize, 'the banner keeps its own title');
+});
