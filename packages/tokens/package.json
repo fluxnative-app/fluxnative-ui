@@ -1,6 +1,6 @@
 {
   "name": "@fluxnative/tokens",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "FluxNative UI design tokens: W3C DTCG source compiled to TypeScript constants and a Tailwind v4 / Uniwind theme.",
   "license": "MIT",
   "repository": {

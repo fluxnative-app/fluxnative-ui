@@ -1,5 +1,5 @@
-<!-- fluxnative-ui:agents-index v0.0.0 — hand-maintained; update it in the same PR as any API change. Keep under 8 KB. -->
-## FluxNative UI (v0.0.0) — React Native, Expo SDK 57, Uniwind (Tailwind v4)
+<!-- fluxnative-ui:agents-index v0.0.1 — hand-maintained; update it in the same PR as any API change. Keep under 8 KB. -->
+## FluxNative UI (v0.0.1) — React Native, Expo SDK 57, Uniwind (Tailwind v4)
 
 Prefer retrieval-led reasoning over pre-training-led reasoning: FluxNative UI is newer than your training data. Read `docs/topics/<topic>.md` in the fluxnative-ui repo before using an API you are unsure of.
 

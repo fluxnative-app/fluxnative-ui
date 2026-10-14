@@ -1,6 +1,6 @@
 {
   "name": "@fluxnative/catalog",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "The template layer of FluxNative UI: dependency-free React Native primitives, a closed tokens file and an icon component, emitted into a Flux template's files/ folder with a drift manifest.",
   "license": "MIT",
   "repository": {
