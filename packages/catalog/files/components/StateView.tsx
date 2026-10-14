@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import { fontWeight, shape, space, text, type } from '../theme/tokens';
+import { fontWeight, shape, space, text, type, type TypeRole } from '../theme/tokens';
 import { usePalette } from '../theme/usePalette';
 import Button from './Button';
 
@@ -27,6 +27,8 @@ export interface StateViewProps {
   variant?: StateVariant;
   /** Same as `variant="inline"`. */
   inline?: boolean;
+  /** The block title in a type role as the brand sets it (e.g. 'headline' for its display face). Default: `type.title` at 18/28 semibold. The banner keeps its 16/24 title. */
+  titleRole?: TypeRole;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -44,6 +46,7 @@ export default function StateView({
   badge,
   variant,
   inline = false,
+  titleRole,
   style,
 }: StateViewProps) {
   const palette = usePalette();
@@ -87,7 +90,7 @@ export default function StateView({
       style={[styles.block, kind === 'card' ? [styles.card, { backgroundColor: palette.card, borderColor: palette.border }] : null, style]}
     >
       {lead !== undefined ? <View style={styles.icon}>{lead}</View> : null}
-      <Text style={[type.title, styles.title, { color: titleColor }]}>{title}</Text>
+      <Text style={[titleRole !== undefined ? [type[titleRole], styles.titleInRole] : [type.title, styles.title], { color: titleColor }]}>{title}</Text>
       {body !== undefined ? <Text style={[type.bodySm, styles.body, { color: palette['muted-foreground'] }]}>{body}</Text> : null}
       {action !== null ? <View style={styles.action}>{action}</View> : null}
     </View>
@@ -99,6 +102,8 @@ const styles = StyleSheet.create({
   card: { paddingVertical: space[8], paddingHorizontal: space[6], borderRadius: shape.card, borderWidth: StyleSheet.hairlineWidth },
   icon: { marginBottom: space[4] },
   badge: { alignItems: 'center', justifyContent: 'center' },
+  // A title in a role keeps the role's size, weight and face; only the centring is the recipe's.
+  titleInRole: { textAlign: 'center' },
   // Comp tokens: the title is `type.title` set at 18/28 semibold (16/24 in a banner), untracked.
   title: {
     fontSize: text.lg.fontSize,

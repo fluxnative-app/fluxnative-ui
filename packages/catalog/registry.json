@@ -2924,6 +2924,11 @@
           "type": "boolean"
         },
         {
+          "name": "titleRole",
+          "optional": true,
+          "type": "TypeRole"
+        },
+        {
           "name": "style",
           "optional": true,
           "type": "style"
@@ -2952,6 +2957,9 @@
         "categories": 3,
         "note": "StateBlock 24 copies in 3 categories (A3.3 recipe 4)"
       },
+      "indexOmit": [
+        "titleRole"
+      ],
       "deps": [
         "Button",
         "Press",
