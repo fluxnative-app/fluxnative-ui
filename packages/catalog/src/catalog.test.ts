@@ -13,6 +13,24 @@ import { brandLayers, resolveBrand } from '@fluxnative/tokens/brand';
 
 const CLI = join(import.meta.dirname, 'cli.ts');
 
+test('colors.json seed: the accent roles neither block sets come from it, readable, and a block can still pin one', () => {
+  assert.throws(() => validateOverrides({ seed: 'lime' }), /seed must be a #rrggbb colour/);
+  const lum = (hex: string) => {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0]! + 0.7152 * c[1]! + 0.0722 * c[2]!;
+  };
+  const ratio = (a: string, b: string) => {
+    const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x) as [number, number];
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  const out = resolveColors(validateOverrides({ scheme: 'dark', seed: '#c8f031', dark: { background: '#0b1324', tertiary: '#ff8a5b' } }));
+  assert.notEqual(out.dark.primary, '#0a84ff', "the seed replaced the kit's blue");
+  assert.ok(ratio(out.dark.primary!, '#0b1324') >= 4.5, 'readable on the background the block set');
+  assert.equal(out.dark.tertiary, '#ff8a5b', 'a role the block set is kept');
+  assert.equal(out.dark.ring, out.dark.primary);
+  assert.equal(resolveColors({}).light.primary, '#007aff', 'no seed, no change');
+});
+
 test('validateOverrides accepts the documented shape and rejects the rest', () => {
   assert.deepEqual(validateOverrides({ scheme: 'dark', dark: { primary: '#fff', scrim: 'rgba(0,0,0,0.45)' } }), {
     scheme: 'dark',

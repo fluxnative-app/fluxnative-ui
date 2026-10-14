@@ -5,7 +5,7 @@
 
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { chrome, colors, duration, easing, fontWeight, glass, radius, spacingUnit, text } from '@fluxnative/tokens';
-import { emitSysTs, readBrandFiles, resolveBrand, type ResolvedBrand, type SysTokens, type TokenSources } from '@fluxnative/tokens/brand';
+import { deriveSeedRoles, emitSysTs, readBrandFiles, resolveBrand, type ResolvedBrand, type SysTokens, type TokenSources } from '@fluxnative/tokens/brand';
 // The sys constants by namespace: one of them is called `type`.
 import * as kit from '@fluxnative/tokens';
 
@@ -44,6 +44,8 @@ export type SchemeName = 'light' | 'dark';
 export interface ColorOverrides {
   /** The scheme the template is designed for. `system` (default) follows the OS. */
   scheme?: SchemeName | 'system';
+  /** One brand colour (`#rrggbb`): the accent roles neither block sets are derived from it, readable on every surface. */
+  seed?: string;
   light?: Record<string, string>;
   dark?: Record<string, string>;
 }
@@ -63,7 +65,10 @@ export function validateOverrides(overrides: unknown, where = 'colors'): ColorOv
   }
   const o = overrides as Record<string, unknown>;
   for (const key of Object.keys(o)) {
-    if (!['scheme', 'light', 'dark', '$schema', '$comment'].includes(key)) problems.push(`unknown key "${key}"`);
+    if (!['scheme', 'seed', 'light', 'dark', '$schema', '$comment'].includes(key)) problems.push(`unknown key "${key}"`);
+  }
+  if (o.seed !== undefined && (typeof o.seed !== 'string' || !/^#[0-9a-f]{6}$/i.test(o.seed))) {
+    problems.push(`seed must be a #rrggbb colour (got ${JSON.stringify(o.seed)})`);
   }
   if (o.scheme !== undefined && !['light', 'dark', 'system'].includes(String(o.scheme))) {
     problems.push(`scheme must be "light", "dark" or "system" (got ${JSON.stringify(o.scheme)})`);
@@ -92,6 +97,7 @@ export function resolveColors(overrides: ColorOverrides = {}): Record<SchemeName
     const base: Record<string, string> = { ...colors[scheme] };
     const over = overrides[scheme] ?? {};
     for (const name of COLOR_NAMES) out[scheme][name] = (over[name] ?? base[name] ?? '').trim();
+    if (overrides.seed !== undefined) Object.assign(out[scheme], deriveSeedRoles(overrides.seed, out[scheme], scheme, new Set(Object.keys(over))));
   }
   return out;
 }
