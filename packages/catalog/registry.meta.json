@@ -512,6 +512,9 @@
         "app": "Shop",
         "screen": "https://mobbin.com/screens/3931e59a-b866-467a-a54d-3ccce8f6f2c3"
       }
+    ],
+    "indexOmit": [
+      "countFormat"
     ]
   },
   "Reveal": {
@@ -878,7 +881,8 @@
       }
     ],
     "indexOmit": [
-      "align"
+      "align",
+      "labelRole"
     ]
   },
   "Stepper": {

@@ -86,8 +86,11 @@ export default function ProgressBar({
 
   const percent = Math.round(clamped * 100);
   const corner = square ? 0 : Math.min(shape.control, height / 2);
+  // Under Reduce Motion the sweep holds still in the middle, so an indeterminate bar never reads as an empty track.
   const run = indeterminate
-    ? { width: SWEEP_WIDTH, left: sweep.interpolate({ inputRange: [0, 1], outputRange: ['-30%', '100%'] }) }
+    ? reduced
+      ? { width: SWEEP_WIDTH, left: '35%' as const }
+      : { width: SWEEP_WIDTH, left: sweep.interpolate({ inputRange: [0, 1], outputRange: ['-30%', '100%'] }) }
     : { width: fill.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) };
   return (
     <View

@@ -77,7 +77,7 @@ test('PageDots dots (laudine-designer-boutique): equal round dots, the others at
   const current = styleOf(allOf(dots.view, 'Animated.View')[1] as View);
   assert.deepEqual([outputOf(current.width), outputOf(current.opacity), current.borderRadius], [[8, 8], [0.55, 1], 4]);
   const pill = styleOf(allOf(draw('components/PageDots.tsx', { count: 3, index: 1 }).view, 'Animated.View')[1] as View);
-  assert.deepEqual([outputOf(pill.width), outputOf(pill.opacity)], [[8, 24], [0.3, 1]], 'the pill by default, unchanged');
+  assert.deepEqual([outputOf(pill.width), outputOf(pill.opacity)], [[8, 24], [0.55, 1]], 'the pill by default; its faded dots at 55% since 0.6 (3:1 on every catalog palette)');
 });
 
 test('text actions reach 44 pt (dimity-assistant measured 34): Notice, SectionHeader, Snackbar, SearchField Cancel, TextField Show', () => {
