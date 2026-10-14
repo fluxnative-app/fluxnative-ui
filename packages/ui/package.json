@@ -1,6 +1,6 @@
 {
   "name": "@fluxnative/ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "FluxNative UI: React Native components with always-on Liquid Glass navigation chrome, styled with Tailwind v4 classes.",
   "license": "MIT",
   "repository": {
