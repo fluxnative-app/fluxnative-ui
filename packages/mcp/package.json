@@ -18,12 +18,14 @@
   },
   "files": [
     "src",
+    "CRAFT.index.md",
     "!src/**/*.test.ts",
     "!src/graders/fixtures"
   ],
   "scripts": {
     "test": "node --test src/*.test.ts src/graders/*.test.ts",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "node -e \"require('node:fs').copyFileSync('../../docs/llm/CRAFT.index.md', 'CRAFT.index.md')\""
   },
   "dependencies": {
     "@fluxnative/catalog": "workspace:*",

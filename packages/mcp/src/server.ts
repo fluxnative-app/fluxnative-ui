@@ -13,7 +13,8 @@
 // Runs over stdio (`npx fluxnative-ui-mcp`, or `node packages/mcp/src/bin.js`).
 
 import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { FILES_DIR, PACKAGE_ROOT as CATALOG_ROOT, CATALOG_VERSION, renderCatalogIndex, renderRegistry, type Registry, type RegistryEntry } from '@fluxnative/catalog';
@@ -25,6 +26,8 @@ import { parseScreen } from './graders/source.ts';
 import { gradeTokens } from './graders/tokens.ts';
 
 const REPO_ROOT = join(CATALOG_ROOT, '..', '..');
+/** This package's root: from npm, `prepack` has put CRAFT.index.md here (the checkout's docs/llm/ is not shipped). */
+const PACKAGE_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 let cached: Registry | null = null;
 export function registry(): Registry {
@@ -139,8 +142,8 @@ export function createServer(): McpServer {
       inputSchema: {},
     },
     async () => {
-      const file = join(REPO_ROOT, 'docs', 'llm', 'CRAFT.index.md');
-      return text(existsSync(file) ? readFileSync(file, 'utf8') : 'CRAFT.index.md is not in this checkout.');
+      const file = [join(REPO_ROOT, 'docs', 'llm', 'CRAFT.index.md'), join(PACKAGE_DIR, 'CRAFT.index.md')].find((path) => existsSync(path));
+      return text(file !== undefined ? readFileSync(file, 'utf8') : 'CRAFT.index.md is not in this install.');
     },
   );
 
