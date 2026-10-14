@@ -78,6 +78,14 @@ test('a seed that already reads is used as is; one that does not keeps its hue a
   assert.ok(g > r && g > b, `${lime} keeps the hue`);
 });
 
+test("a card of the opposite polarity is an inverse surface: the accent reads on the page's surfaces, not black", () => {
+  // cargox-freight: a white page with a dark teal card. No colour reaches 4.5:1 on both.
+  const palette = { ...kitPalette('light'), background: '#ffffff', card: '#0f2c33', popover: '#ffffff', muted: '#f2f2f7' };
+  const d = deriveSeedRoles('#007aff', palette, 'light');
+  assert.notEqual(d.primary, '#000000');
+  for (const surface of ['#ffffff', '#f2f2f7']) assert.ok(contrast(d.primary!, surface) >= READABLE, `on ${surface}`);
+});
+
 test('roles the brand set are kept, and accents follow the surfaces the brand set', () => {
   const cream = { ...kitPalette('light'), background: '#f4efe6', muted: '#e2d9c8' };
   const kept = deriveSeedRoles('#c8f031', { ...cream, primary: '#3b5d12' }, 'light', new Set(['primary']));

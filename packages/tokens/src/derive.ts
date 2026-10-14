@@ -8,7 +8,7 @@
 
 export type Scheme = 'light' | 'dark';
 
-/** The surfaces an accent is drawn on. */
+/** The surfaces an accent is drawn on (those of the page's polarity; see `deriveSeedRoles`). */
 export const SEED_SURFACES = ['background', 'card', 'popover', 'muted'] as const;
 
 /** The roles a seed derives, when the brand does not set them. Neutrals, status colours, borders and glass stay the kit's or the brand's. */
@@ -114,12 +114,17 @@ export function readableOn(background: string, scheme: Scheme): string {
  */
 export function deriveSeedRoles(seed: string, palette: Record<string, string>, scheme: Scheme, keep: ReadonlySet<string> = new Set()): Record<string, string> {
   if (!HEX.test(seed.trim())) throw new Error(`seed must be a #rrggbb colour (got ${JSON.stringify(seed)})`);
-  const surfaces = SEED_SURFACES.map((role) => palette[role]).filter((c): c is string => typeof c === 'string' && c.trim() !== '');
+  const background = palette.background ?? (scheme === 'dark' ? '#000000' : '#ffffff');
+  // The surfaces that take the page's ink. A card of the opposite polarity (a dark card on a light page) is
+  // an inverse surface with its own foreground: no colour reads on both, so the accent is not held to it.
+  const ink = readableOn(background, scheme);
+  const surfaces = SEED_SURFACES.map((role) => palette[role])
+    .filter((c): c is string => typeof c === 'string' && c.trim() !== '')
+    .filter((c) => readableOn(c, scheme) === ink);
   const pick = (role: string, derived: () => string) => (keep.has(role) ? palette[role]! : derived());
 
   const primary = pick('primary', () => readableAccent(seed, surfaces, scheme));
   const tertiary = pick('tertiary', () => readableAccent(rotateHue(seed, TERTIARY_HUE_STEP), surfaces, scheme));
-  const background = palette.background ?? (scheme === 'dark' ? '#000000' : '#ffffff');
   // A tinted container for the current item (a tab's lens, a badge circle): the accent faded into the page.
   const accent = pick('accent', () => mix(primary, background, scheme === 'dark' ? 0.72 : 0.86, scheme));
 

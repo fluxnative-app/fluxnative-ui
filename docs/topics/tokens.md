@@ -166,12 +166,12 @@ Its `brand.dark.tokens.json` sets `primary`, `foreground-soft`, `destructive` an
 
 With `"seed": "#c8f031"`, the roles the brand files do not set among `primary`, `primary-foreground`, `ring`, `tertiary`, `tertiary-foreground`, `accent` and `accent-foreground` come from that colour, in both schemes (`deriveSeedRoles` in `@fluxnative/tokens/brand`, the FluxNative builder's method):
 
-- `primary` keeps the seed's hue and moves toward black (light) or white (dark) just far enough to reach 4.5:1 on `background`, `card`, `popover` and `muted`, the surfaces the brand ends up with. A seed that already reads is used as written.
+- `primary` keeps the seed's hue and moves toward black (light) or white (dark) just far enough to reach 4.5:1 on `background`, `card`, `popover` and `muted`, the surfaces the brand ends up with. A seed that already reads is used as written. A surface of the opposite polarity (a dark card on a light page) is an inverse surface with its own foreground; no colour reads on both, so the accent is held to the page's surfaces only.
 - `tertiary` is the seed's hue turned 40°, made readable the same way. `ring` is `primary`.
 - `accent` is `primary` faded into the page (86% light, 72% dark), a container for the current item. `accent-foreground` is the seed's hue made readable on it.
 - `primary-foreground` and `tertiary-foreground` are white or near-black, whichever reads better.
 
-A role a brand file sets is used as written, and the contrast rules below still judge it. Neutrals, status colours, borders and glass stay the kit's or the brand's. With a seed, a brand that sets light colours and no dark file is not warned: the dark scheme takes the kit's dark neutrals and the seed's accents. The tests sweep 840 seeds over six grounds (the kit's light and dark, cream, sage, navy, warm graphite) with no pair under 4.5:1.
+A role a brand file sets is used as written, and the contrast rules below still judge it. Neutrals, status colours, borders and glass stay the kit's or the brand's. With a seed, a brand that sets light colours and no dark file is not warned: the dark scheme takes the kit's dark neutrals and the seed's accents. The tests sweep 840 seeds over six grounds (the kit's light and dark, cream, sage, navy, warm graphite) with no pair under 4.5:1. Over fluxbuilder-template's 98 templates (14 October 2026), 41 primaries sit under 4.5:1 on one of their own surfaces; with each template's primary as its seed, all 98 reach it.
 
 A `colors.json` (`--colors`) takes the same `"seed"` beside `scheme`, `light` and `dark`.
 
