@@ -10,3 +10,6 @@ dist-web/
 expo-env.d.ts
 .claude/*
 !.claude/launch.json
+
+# Copied by packages/mcp prepack; the source is docs/llm/CRAFT.index.md
+packages/mcp/CRAFT.index.md

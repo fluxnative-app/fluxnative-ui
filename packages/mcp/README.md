@@ -1,4 +1,4 @@
-# @fluxnative/mcp
+# @fluxnative/ui-mcp
 
 An [MCP](https://modelcontextprotocol.io) server over the FluxNative UI
 catalog layer, so an agent writing a Flux template screen (or an Expo app
@@ -44,8 +44,8 @@ The prompt that gets the most out of it: "Before writing a screen, call
 ## Develop
 
 ```bash
-pnpm --filter @fluxnative/mcp test        # node:test, in-memory transport
-pnpm --filter @fluxnative/mcp typecheck
+pnpm --filter @fluxnative/ui-mcp test        # node:test, in-memory transport
+pnpm --filter @fluxnative/ui-mcp typecheck
 ```
 
 `src/server.ts` holds the tools (pure functions `searchComponents`,
