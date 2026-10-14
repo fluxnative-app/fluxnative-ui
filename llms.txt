@@ -33,4 +33,4 @@
 - [@fluxnative/icons](https://github.com/fluxnative-app/fluxnative-ui/tree/main/packages/icons): the closed icon table and `<Icon>`
 - [@fluxnative/tw-runtime](https://github.com/fluxnative-app/fluxnative-ui/tree/main/packages/tw-runtime): the runtime class resolver
 - [@fluxnative/catalog](https://github.com/fluxnative-app/fluxnative-ui/tree/main/packages/catalog): the template layer and the `fluxnative-catalog` command (`emit`, `update`, `check`, `index`, `registry`)
-- [@fluxnative/mcp](https://github.com/fluxnative-app/fluxnative-ui/tree/main/packages/mcp): the MCP server (`search_components`, `get_component`, `get_index`, `get_design_rules`, `list_tokens`, `validate_screen`)
+- [@fluxnative/ui-mcp](https://github.com/fluxnative-app/fluxnative-ui/tree/main/packages/mcp): the MCP server (`search_components`, `get_component`, `get_index`, `get_design_rules`, `list_tokens`, `validate_screen`)

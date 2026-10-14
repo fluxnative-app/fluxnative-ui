@@ -10,7 +10,7 @@
 //   list_tokens        palette roles, type / shape / elevation / space keys
 //   validate_screen    a screen's source → the deterministic graders' verdict
 //
-// Runs over stdio (`npx fluxnative-mcp`, or `node packages/mcp/src/bin.js`).
+// Runs over stdio (`npx fluxnative-ui-mcp`, or `node packages/mcp/src/bin.js`).
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';

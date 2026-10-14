@@ -1,5 +1,5 @@
 {
-  "name": "@fluxnative/mcp",
+  "name": "@fluxnative/ui-mcp",
   "version": "0.0.1",
   "description": "An MCP server over the FluxNative UI catalog layer: search and read recipes with their props and evidence, fetch the model index and the design rules, and validate a screen against the template dialect before it lands in a template.",
   "license": "MIT",
@@ -14,7 +14,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "bin": {
-    "fluxnative-mcp": "src/bin.js"
+    "fluxnative-ui-mcp": "src/bin.js"
   },
   "files": [
     "src",

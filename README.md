@@ -60,7 +60,7 @@ There is no prop that turns glass off. Only the platform and the user's accessib
 | `@fluxnative/tw-runtime` | Resolves the same class contract at runtime, for hosts with no build step (the Flux WebView, Snack) |
 | `@fluxnative/icons` | One closed icon table (SF Symbol, Material Symbol, SVG path) and an `<Icon>`; `FluxTabs.Tab iconName` |
 | `@fluxnative/catalog` | Emits the tokens, `Icon` and forty recipes (primitives, the AI pack, and the 0.2 set: `ScreenHeader`, `SearchField`, `TextField`, `ListRow`, `ListGroup`, `SegmentedControl`, `Notice`, `Stepper`, `BottomBar`, `Avatar`, `ProgressBar`, `PageDots`, `Rating`, `Photo`, `Divider`, `useCountdown`) into a Flux template as dependency-free files, with a drift manifest, a machine-readable `registry.json`, and `learn`, which reads a template catalog back ([`docs/topics/catalog.md`](docs/topics/catalog.md)) |
-| `@fluxnative/mcp` | An MCP server over the catalog: search and read recipes, fetch the index and the craft rules, validate a screen ([`packages/mcp`](packages/mcp/README.md)) |
+| `@fluxnative/ui-mcp` | An MCP server over the catalog: search and read recipes, fetch the index and the craft rules, validate a screen ([`packages/mcp`](packages/mcp/README.md)) |
 
 ## Install in an Expo app
 
