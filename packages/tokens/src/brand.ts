@@ -49,6 +49,7 @@ import {
   type TokenModel,
   type TokenSources,
 } from './model.ts';
+import { deriveSeedRoles } from './derive.ts';
 import { sysTokens, type SysTokens } from './sys.ts';
 
 export type { TokenSources } from './model.ts';
@@ -77,6 +78,8 @@ export interface BrandMeta {
   /** Default haptic of a press. */
   haptic: Haptic;
   skeleton: { mode: SkeletonMode; base: string; highlight: string };
+  /** One brand colour (`#rrggbb`). The accent roles the brand does not set are derived from it, readable on every surface (`deriveSeedRoles`). */
+  seed?: string;
 }
 
 export interface BrandProblem {
@@ -352,7 +355,7 @@ const GROUP_TYPES: Record<string, readonly TokenType[]> = {
 /** Keys each group's `$extensions["dev.fluxnative"]` may carry. */
 const EXTENSION_KEYS: Record<string, readonly string[]> = { font: ['fontVariant'], type: ['fontVariant'], elevation: ['android'] };
 
-const META_KEYS = ['schemaVersion', 'scheme', 'density', 'personality', 'haptic', 'skeleton'];
+const META_KEYS = ['schemaVersion', 'scheme', 'density', 'personality', 'haptic', 'skeleton', 'seed'];
 const ROOT_PROPERTIES = ['$schema', '$description', '$extensions', '$type'];
 
 /** The kit's closed key list for a brand group (token path below the group). */
@@ -549,6 +552,10 @@ function readMeta(layers: BrandLayers, colorNames: readonly string[], problems: 
   meta.scheme = pick(raw, 'scheme', `${at}.scheme`, ['light', 'dark', 'system'] as const, 'system');
   meta.density = pick(raw, 'density', `${at}.density`, DENSITIES, 'regular');
   meta.haptic = pick(raw, 'haptic', `${at}.haptic`, HAPTICS, INTERACTION_DEFAULTS.haptic);
+  if (raw.seed !== undefined) {
+    if (typeof raw.seed === 'string' && /^#[0-9a-f]{6}$/i.test(raw.seed)) meta.seed = raw.seed.toLowerCase();
+    else problems.push(error(`${at}.seed`, `must be a #rrggbb colour (got ${JSON.stringify(raw.seed)})`));
+  }
   if (raw.personality !== undefined) {
     if (Array.isArray(raw.personality) && raw.personality.every((w) => typeof w === 'string' && w.trim() !== '')) meta.personality = [...raw.personality];
     else problems.push(error(`${at}.personality`, 'must be a list of words'));
@@ -851,7 +858,7 @@ export function validateBrand(layers: BrandLayers, kit: TokenSources): BrandRepo
     if (missing.length) {
       problems.push(error('dark', `${layers.dark.map((s) => s.file).join(', ')} must set every role the light colours set; missing ${missing.join(', ')}`));
     }
-  } else if (lightRoles.length > 0 && meta.scheme === 'system') {
+  } else if (lightRoles.length > 0 && meta.scheme === 'system' && meta.seed === undefined) {
     problems.push(warning('dark', 'no dark colours: the dark scheme keeps the kit palette while light uses the brand (add a .dark.tokens.json, or set scheme "light")'));
   } else if (lightRoles.length > 0 && meta.scheme === 'dark') {
     problems.push(warning('light', 'scheme is "dark", so the light colours are never shown; put them in the .dark.tokens.json file'));
@@ -902,6 +909,15 @@ export function validateBrand(layers: BrandLayers, kit: TokenSources): BrandRepo
   } catch (e) {
     problems.push(error('brand', message(e)));
   }
+  if (model && meta.seed !== undefined) {
+    // The accent roles the brand left to the seed, readable on the surfaces this scheme ends up with.
+    for (const scheme of ['light', 'dark'] as const) {
+      const palette = model.colors[scheme];
+      if (palette === undefined) continue;
+      const set = new Set([...entries[scheme].keys()].filter((key) => key.startsWith('color.')).map((key) => key.slice('color.'.length)));
+      Object.assign(palette, deriveSeedRoles(meta.seed, palette, scheme, set));
+    }
+  }
   if (model) {
     model.interaction.press.haptic = meta.haptic;
     model.interaction.skeleton = { ...model.interaction.skeleton, ...meta.skeleton };
@@ -936,3 +952,4 @@ export function resolveBrand(layers: BrandLayers, kit: TokenSources): ResolvedBr
 
 // Tooling entry (`@fluxnative/tokens/brand`): the sys emitters ride along.
 export { emitSysTs, sysTokens, type EmitSysOptions, type ElevationStyleValue, type SysTokens, type TypeStyleValue } from './sys.ts';
+export { deriveSeedRoles, readableAccent, readableOn, SEED_ROLES, SEED_SURFACES } from './derive.ts';
