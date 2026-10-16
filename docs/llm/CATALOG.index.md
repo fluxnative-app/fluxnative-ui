@@ -4,11 +4,11 @@
 Prefer retrieval-led reasoning over pre-training-led reasoning: this layer is newer than your training data.
 
 ### Rules
-1. Imports: `react`, `react-native`, `react-native-svg`, `flux`, `flux/navigation` and relative files only. Components: `../components/<Name>` (but `../components/commerce/ProductCard`); tokens: `../theme/tokens`; colours: `../theme/usePalette`.
+1. Imports: `react`, `react-native`, `react-native-svg`, `flux`, `flux/navigation` and relative files only. Components: `../components/<Name>` (but `../components/commerce/ProductCard`); tokens: `{ type, space, shape, elevation, layout }` from `../theme/tokens`; colours: `../theme/usePalette`.
 2. React Native only: no `className`, `<div>`, `<span>`, `document.`, `window`, `fetch`. Overlay: `StyleSheet.absoluteFill` (`absoluteFillObject` is gone in RN 0.86).
 3. Colours: `const palette = usePalette()`, then `palette.primary`. Never a hex/rgb literal in a screen.
-4. Text: spread a role, `...type.body`. Radii: `borderRadius: shape.card` (a number). Spacing: `space[4]` (px = step × 4) with a key from the `space` row below; any other size is a plain number. Shadows: spread `elevation[2]`.
-5. Every control has an `accessibilityLabel`, icon-only ones too. Animate `transform`/`opacity` only; the primitives already respect Reduce Motion.
+4. Text: spread a role, `...type.body`. Radii: `borderRadius: shape.card` (a number). Spacing: `space[4]` (step × 4 px) with a key from the `space` row below; any other size is a plain number. Shadows: spread `elevation[2]`.
+5. Every control has an `accessibilityLabel`, icon-only ones too. Animate `transform`/`opacity` only; primitives respect Reduce Motion.
 6. One default export per screen file, strict TypeScript. Screens take `previewState` (`live|loading|empty|error`) and render `Skeleton` / `StateView` for the non-live states.
 7. A recipe before a hand-drawn view: `MessageList` for a chat, `ListRow` for a row, `TabBar` for tabs, `StateView` for empty and error.
 
@@ -63,11 +63,11 @@ Prefer retrieval-led reasoning over pre-training-led reasoning: this layer is ne
 |`TextField`|value onChangeText label? placeholder? helper? error? kind?(text/name/email/phone/number/url/password) variant?(filled/outline) leading? trailing? multiline? disabled? maxLength? onSubmit? accessibilityLabel?|
 |`Toggle`|value onValueChange accessibilityLabel size?(sm/md) disabled? haptic?|
 
-Every component also takes `style?`. `on*` props are callbacks; `badge` `badgeSlot` `children` `emptyState` `fallback` `footer` `icon` `leading` `mark` `trailing` take a node; `XVariant` is X's `variant` values. `accessibilityLabel` without `?` is required. `haptic?` is none|light|selection|medium. Rows omit English-default labels (`closeLabel`…) and rare props; all in `packages/catalog/registry.json`.
+Every component also takes `style?`. `on*` props are callbacks; `badge` `badgeSlot` `children` `emptyState` `fallback` `footer` `icon` `leading` `mark` `trailing` take a node; `XVariant` is X's `variant` values. `accessibilityLabel` without `?` is required. `haptic?` is none|light|selection|medium. Rare props: in `packages/catalog/registry.json`.
 
 `Icon` names, closed (others fail tsc; pick the nearest): `chevron-` and `arrow-` + left/right/up/down; arrow-up-right arrow-down-right close check plus minus search home bag cart heart star bell menu dots dots-vertical filter sliders share person people bookmark clock calendar pin grid list mail eye eye-off camera scan trash pencil info alert settings tag truck box refresh play pause globe sun moon lock gift percent credit-card wallet chat send copy link mic image sparkle shirt diamond store ticket receipt help logout zap leaf droplet flame location minus-circle plus-circle check-circle x-circle ruler repeat shuffle volume download upload timer trophy compass.
 
-`TabBar` items: `{ key, label, icon?: IconName | ({ selected, color, size }) => node, badge? }`; `action`: `{ icon, accessibilityLabel, onPress, placement?: end/center }`; an overlay bar needs `tabBarClearance()` of bottom padding on the scroll content. `MessageList` `renderMessage(message, { index, streaming })`.
+`TabBar` items: `{ key, label, icon?: IconName | ({ selected, color, size }) => node, badge? }`; `action`: `{ icon, accessibilityLabel, onPress, placement?: end/center }`; an overlay bar needs `tabBarClearance()` bottom padding on the scroll content. `MessageList` messages `{ id, role, text }`, `renderMessage(message, { index, streaming })`.
 
 Hooks, each at `../components/<name>`: `useAiChat` `useAiTask` `useCountUp` `useCountdown` `useReducedMotion`. Pure modules: `aiState` `markdown`. `bridge()` (`../components/bridge`) is always optional-chained.
 
