@@ -96,6 +96,17 @@ and they should be calibrated against the human review of the 500-template
 batch before `--strict` makes them errors. On 12 October 2026 all 52
 templates pass `--strict` (the four on the process with the imagery warning
 only; the migrated legacy ones with warnings).
+Tokens and JSX are what a template *is*; a reviewer judges what it *shows*.
+fluxbuilder-template's `tool/look_alike.mjs` scores every pair of templates
+on their captures (a colour-blind perceptual hash of the layout, an HSV
+histogram, a tone thumbnail; a pair's score is its most similar pair of
+screens) and flags the closest tenth of the catalog, the percentile bar of
+plan A6.4; `check_craft.py --look-alike` joins that to the `distinct` rule.
+On the 39 legacy templates of 12 October it put two wishlist grids
+(`ember-market-app` / `swell-surf-outfitters`, 0.85) and two cart screens at
+the top, pairs the review panel had passed: the metric finds the screens to
+look at, the panel and a person decide, and only a store submission decides
+for real.
 What the checker cannot judge (whether the asymmetry is intentional, whether
 the copy has a voice) stays with the pairwise judges and the reviewer of the
 template process.
