@@ -16,7 +16,7 @@
   "files": {
     "components/AiBadge.tsx": "7c4de3b7e87720802470d9409241690e2e64946cc9c09d45e5f9e131ba8cfbef",
     "components/Avatar.tsx": "6e65c9c01beed94400e49504130bfe7205fcd17f5969a3a76dab00c181c23912",
-    "components/BottomBar.tsx": "19abd755793093157b7d9e7772199b50a7501c8f854702c1a31977657f2a8b0b",
+    "components/BottomBar.tsx": "38dd4490c563d4a8b6c56956e6dfe7b7c0a9ea1b9419954f42edcce61dc8b371",
     "components/Button.tsx": "9bb8200a3b17cb64249e73eb8531459a8e328ef28a7c7d21945c560ab1875a90",
     "components/Chip.tsx": "798ffcbb61ef764a43cfef87c3e51635aa1d559fde92e642086d953cdef3246b",
     "components/Composer.tsx": "5246bb4b8fd0d676667d7d49ff3c5466a99ccbe4410dfc6e641c2969195e1ffa",
@@ -47,7 +47,7 @@
     "components/StateView.tsx": "d6e751c9fef6765b1b56e05947b6eaad039ccdf5f9b695a0ee67252328d3b387",
     "components/Stepper.tsx": "0fc5d62de63c06e937edacbbc09868d84efc7855bdda6c8049d197884a9c6094",
     "components/StreamingText.tsx": "ece107ebd70237aa3add89c15ac3d2c485c5cdd65827f551d364ac13cb134d81",
-    "components/TabBar.tsx": "e716a67cb885e273eee8f89d2d3d1b6f74a5f4a8c5b5fae6209ee5508d5f1561",
+    "components/TabBar.tsx": "0a19614b734c2fd5fb435c4a9fc95610c3959b31c1d353b1925822ca05e9504a",
     "components/TextField.tsx": "171701af3c324a0cc7a539ed3eb0b264cab39112d7207e3ed2829bbb2668c7d8",
     "components/Toggle.tsx": "c57cb0af37dca5bd48c4b235858d2280220a3d7fc1d9024cabd6b04cd87da3f2",
     "components/aiState.ts": "0cbf7c8a30404369b25c4ac0742cd0ea7747674d0a1a649af99f3d13ce631c2c",
@@ -58,6 +58,7 @@
     "components/useAiTask.ts": "9f512801eec7d0705c05a2472e74edecd6a124ea28a56e2aaebd22d8709abbba",
     "components/useCountUp.ts": "b4c1a937488ee5940f77ee9ad9243ab7a498a1db65931ddb208c4ea6b0143be9",
     "components/useCountdown.ts": "4c9205c2813446fd3ad2f9ec4a0ca9be7d584a7b19d6e073c82f4756ba1a3bb1",
+    "components/useDockInset.ts": "24480657d21ca1c037efb2bf673b58c5802d7eccf01b073fbb541c8e653a687d",
     "components/useReducedMotion.ts": "961d1dbe720b8a0b095dc02049aa12191b00c6b2420bcf82208edc1649078e82",
     "theme/tokens.ts": "d2a10c518ae47d63aebf7cc19f24ee24fc1a79bb15c39ded387bd1069b5de79c",
     "theme/usePalette.ts": "4877b3b82c815bcad18d2adba2015bef634a7117b2668aa52e0f4a7cd1623505"

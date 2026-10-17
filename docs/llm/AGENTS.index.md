@@ -36,7 +36,7 @@ Prefer retrieval-led reasoning over pre-training-led reasoning: FluxNative UI is
 6. Icons: `<Icon name="bag" size={22} color={palette.foreground} />` with a name from `ICON_NAMES`; `filled` for the selected state. Tabs take `iconName` and need nothing else.
 7. `FluxTabs minimize` and `Tab role="search"` are iOS 26+ only; Android and web ignore them. `TabBar` is a Material 3 bar on Android (`shape="bar"`) and a floating pill elsewhere.
 4. Use `onPress`, not `onClick`. Use `View`, `Text` and `Pressable`, not `div` and `span`.
-5. Pad content above a custom tab bar with `useTabBarInset()`.
+5. Pad content above a custom tab bar with `useTabBarInset()`. In a Flux template (catalog layer): wrap the screen in `DockInsetProvider` and pad scroll content by `useDockInset()` (`../components/useDockInset`); the overlay `TabBar` reports itself, a template dock uses `onLayout={useReportDock({ bottom })}`.
 
 ### Components
 |component|props|

@@ -61,7 +61,7 @@
   "BottomBar": {
     "since": "0.2.0",
     "recipeKind": "visual",
-    "use": "The pinned action bar under a product, cart, booking or form screen: one or two buttons, a stepper or price beside them, a total above them.",
+    "use": "The pinned action bar under a product, cart, booking or form screen: one or two buttons, a stepper or price beside them, a total above them. In the screen's column after the scroll view it takes its own space; placed over the content (style position 'absolute') it reports its height to the nearest DockInsetProvider, so the scroll content pads by useDockInset().",
     "archetypes": [
       "content-detail",
       "cart-checkout",
@@ -95,7 +95,9 @@
       }
     ],
     "indexOmit": [
-      "arrange"
+      "arrange",
+      "bottom",
+      "children"
     ]
   },
   "Button": {
@@ -988,7 +990,7 @@
   "TabBar": {
     "since": "0.4.0",
     "recipeKind": "visual",
-    "use": "The tabs at the foot of an app: two to five destinations, one current, as an inset floating capsule (iOS 26) or a full-width bar (Material 3, classic iOS); a round action beside it or raised between the tabs. The one tab bar a template draws until the host has tab chrome.",
+    "use": "The tabs at the foot of an app: two to five destinations, one current, as an inset floating capsule (iOS 26) or a full-width bar (Material 3, classic iOS); a round action beside it or raised between the tabs. The one tab bar a template draws until the host has tab chrome. Over the content it reports its height to the nearest DockInsetProvider: wrap the screen (or the tab shell) in DockInsetProvider and give the scroll content paddingBottom: useDockInset() instead of tabBarClearance().",
     "archetypes": [
       "*"
     ],
@@ -1041,7 +1043,8 @@
       "onReselect",
       "haptic",
       "overlay",
-      "bottom"
+      "bottom",
+      "accessibilityLabel"
     ]
   },
   "TextField": {
@@ -1201,6 +1204,24 @@
     "evidence": {
       "templates": 6,
       "note": "useCountdown 3 copies; 6 templates run a countdown by hand"
+    }
+  },
+  "useDockInset": {
+    "since": "0.7.0",
+    "recipeKind": "behaviour",
+    "use": "The bottom padding scroll content needs so nothing rests under a floating dock: wrap the screen in DockInsetProvider, give the scroll content paddingBottom: useDockInset(). The kit's overlay TabBar and an absolutely placed BottomBar report themselves; a template's own dock (TabDock, PillDock) puts onLayout={useReportDock({ bottom })} on its outer view. dockInset() is the pure sum: height + bottom offset + safe area not already counted + a 16 pt gap; two docks take the larger, 0 with none.",
+    "archetypes": [
+      "*"
+    ],
+    "aliases": [
+      "useDockInset",
+      "useTabBarInset",
+      "useDockHeight",
+      "useBottomInset",
+      "DockSpacer"
+    ],
+    "evidence": {
+      "note": "p0.overlap (content under a floating dock at rest) was the most frequent blocking failure of the template factory's batches 23, 25 and 26: builders padded scroll content by hand (dock height + 16 pt) and many forgot"
     }
   },
   "useReducedMotion": {
