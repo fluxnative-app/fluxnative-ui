@@ -37,6 +37,20 @@ test('an archetype lists the recipes that name it, most evidence first, then the
   assert.ok(map.loading.recipes.includes('Skeleton') && !map.loading.general.includes('Skeleton'));
 });
 
+test('behaviour lists, in order, the names of recipes and general whose recipeKind is behaviour', () => {
+  const kind = new Map(registry.components.map((c) => [c.name, c.recipeKind]));
+  const map = renderArchetypeMap(registry);
+  assert.equal(map.mapVersion, 2);
+  for (const [archetype, entry] of Object.entries(map.archetypes)) {
+    assert.deepEqual(entry.behaviour, [...entry.recipes, ...entry.general].filter((name) => kind.get(name) === 'behaviour'), archetype);
+  }
+  const checkout = map.archetypes['cart-checkout'];
+  assert.ok(checkout.behaviour.includes('Press') && checkout.behaviour.includes('useDockInset'), 'general behaviour recipes count for every archetype');
+  assert.ok(!checkout.behaviour.includes('Button') && !checkout.behaviour.includes('BottomBar'), 'visual recipes are left out');
+  assert.ok(map.archetypes['ai-chat'].behaviour.includes('useAiChat'));
+  assert.ok(map.archetypes.other.behaviour.length > 0, 'an archetype no recipe names still expects the general behaviour ones');
+});
+
 test('an archetype no recipe names still gets the general recipes', () => {
   const other = renderArchetypeMap(registry).archetypes.other;
   assert.deepEqual(other.recipes, []);

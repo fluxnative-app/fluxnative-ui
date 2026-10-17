@@ -28,6 +28,8 @@ test('get_archetype lists the recipes made for an archetype, then the general on
   assert.ok(checkout.recipes.some((r) => r.name === 'Stepper' && r.summary !== '' && r.use !== '' && r.from.endsWith('/Stepper')));
   assert.ok(checkout.general.some((r) => r.name === 'Button'));
   assert.ok(!checkout.general.some((g) => checkout.recipes.some((r) => r.name === g.name)));
+  assert.ok(checkout.behaviour.includes('Press') && !checkout.behaviour.includes('Button'), 'behaviour recipes only');
+  assert.ok(checkout.behaviour.every((name) => [...checkout.recipes, ...checkout.general].some((r) => r.name === name)));
   const other = getArchetype('other');
   assert.ok(!('error' in other));
   assert.deepEqual(other.recipes, []);
@@ -83,6 +85,7 @@ test('the server lists its seven tools and answers get_index under 9 KB over an 
   assert.match((found.content as Array<{ text: string }>)[0]?.text ?? '', /"name": "Avatar"/);
   const settings = await client.callTool({ name: 'get_archetype', arguments: { archetype: 'settings' } });
   assert.match((settings.content as Array<{ text: string }>)[0]?.text ?? '', /"name": "ListRow"/);
+  assert.match((settings.content as Array<{ text: string }>)[0]?.text ?? '', /"behaviour": \[/);
   const unknown = await client.callTool({ name: 'get_archetype', arguments: { archetype: 'nope' } });
   assert.equal(unknown.isError, true);
   assert.match((unknown.content as Array<{ text: string }>)[0]?.text ?? '', /"valid"/);

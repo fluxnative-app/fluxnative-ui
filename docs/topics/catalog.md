@@ -330,10 +330,12 @@ repo read it instead of parsing sources.
 
 Beside it, the same step writes `registry.archetypes.json`: for each screen
 archetype on `ARCHETYPES` (exported from `@fluxnative/catalog`, the 35 the
-template catalog uses), `{ recipes, general }`, where `recipes` are the
+template catalog uses), `{ recipes, general, behaviour }`, where `recipes` are the
 components whose `archetypes` name it, most evidence first (`evidence.templates`,
-then `evidence.categories`, then name), and `general` the `*` ones not already
-listed. An archetype in `registry.meta.json` that is not on the list fails the
+then `evidence.categories`, then name), `general` the `*` ones not already
+listed, and `behaviour` the names from both whose `recipeKind` is `behaviour`:
+the ones every screen of that archetype is expected to use, never copy (the
+factory's speccer requires them). `mapVersion` is 2 since `behaviour`. An archetype in `registry.meta.json` that is not on the list fails the
 build. A speccer that has assigned a screen its archetype reads one entry, or
 calls the MCP tool `get_archetype`, instead of scoring every recipe.
 

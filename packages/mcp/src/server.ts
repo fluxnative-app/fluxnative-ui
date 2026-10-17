@@ -92,6 +92,8 @@ export interface ArchetypeAnswer {
   recipes: ArchetypeRecipe[];
   /** Recipes for any screen (`*`) not already in `recipes`. */
   general: ArchetypeRecipe[];
+  /** Names from `recipes` and `general` whose `recipeKind` is `behaviour`: every screen of this archetype is expected to use them, never copy them. */
+  behaviour: string[];
 }
 
 /** One entry of registry.archetypes.json with each recipe's summary and use line; an unknown archetype gets the valid ones. */
@@ -103,7 +105,7 @@ export function getArchetype(archetype: string): ArchetypeAnswer | { error: stri
     const c = byName.get(name);
     return { name, from: c?.from ?? '', summary: c?.summary ?? '', use: c?.use ?? '' };
   };
-  return { archetype, recipes: entry.recipes.map(describe), general: entry.general.map(describe) };
+  return { archetype, recipes: entry.recipes.map(describe), general: entry.general.map(describe), behaviour: entry.behaviour };
 }
 
 export interface Validation {
@@ -164,7 +166,7 @@ export function createServer(): McpServer {
     {
       title: 'Recipes for a screen archetype',
       description:
-        'The recipes that fit one screen archetype (OpenDesign\'s 30 plus ai-chat, ai-generate, ai-scan, ai-voice, ai-insight): first those made for it, most evidence first, then the general ones that fit any screen, each with its import path, one-line summary and when to use it. Use when a screen\'s archetype is known and its parts are not; get_component reads one in full.',
+        'The recipes that fit one screen archetype (OpenDesign\'s 30 plus ai-chat, ai-generate, ai-scan, ai-voice, ai-insight): first those made for it, most evidence first, then the general ones that fit any screen, each with its import path, one-line summary and when to use it; `behaviour` names the ones (recipeKind behaviour) every screen of the archetype is expected to use, never copy. Use when a screen\'s archetype is known and its parts are not; get_component reads one in full.',
       inputSchema: { archetype: z.string().min(1).describe('A screen archetype: cart-checkout, settings, ai-chat…') },
     },
     async ({ archetype }) => {
