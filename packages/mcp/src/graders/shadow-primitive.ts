@@ -9,16 +9,23 @@
 //     file that springs or times a `scale` (Press re-implemented).
 //   - modal: a react-native `<Modal>` (Sheet draws inside the screen, never Modal).
 //   - icon-svg: an `<Svg viewBox="0 0 24 24">` (an icon drawn by hand; Icon has the table).
+// A copy of a *behaviour* recipe (kinds.ts: Press, Sheet, TextField,
+// StateView…) is a finding and fails the grade. A copy of a *visual* one
+// (Button, Chip, Icon, ScreenHeader…) is a warning: the template's own look
+// is its identity, so drawing it by hand is reported, never failed.
 
 import ts from 'typescript';
 import { catalogTag, defaultExportName, forEachNode, jsxTags, lineOf, tagName, unwrap, type JsxTag, type Screen } from './source.ts';
 import { countScore, type GradeResult } from './types.ts';
+import { kindOf, recipeKinds, type RecipeKind } from './kinds.ts';
 
 export type ShadowRule = 'name' | 'scale-press' | 'modal' | 'icon-svg';
 
 export interface ShadowFinding {
   rule: ShadowRule;
   primitive: string;
+  /** The primitive's kind: `behaviour` findings fail, `visual` ones are warnings. */
+  kind: RecipeKind;
   line: number;
   message: string;
 }
@@ -29,7 +36,10 @@ export interface Composition {
 }
 
 export interface ShadowDetails {
+  /** Copies of behaviour recipes: any one fails the grade. */
   findings: ShadowFinding[];
+  /** Copies of visual recipes: reported, never failed (a template may draw its own look). */
+  warnings: ShadowFinding[];
   /** Local components that wrap a primitive (allowed: the kit's backlog, not duplication). */
   compositions: Composition[];
   /** Raw Pressable / Touchable* elements: not a finding, but each one skips Press (haptics, label, scale). */
@@ -89,11 +99,11 @@ interface LocalComponent {
   line: number;
 }
 
-export function gradeShadowPrimitive(screen: Screen): GradeResult<ShadowDetails> {
+export function gradeShadowPrimitive(screen: Screen, kinds: ReadonlyMap<string, RecipeKind> = recipeKinds()): GradeResult<ShadowDetails> {
   const { sf } = screen;
-  const findings: ShadowFinding[] = [];
+  const all: Array<Omit<ShadowFinding, 'kind'>> = [];
   const compositions: Composition[] = [];
-  const flagged: ts.Node[] = [];
+  const flagged: Array<{ node: ts.Node; kind: RecipeKind }> = [];
   const screenName = defaultExportName(sf);
 
   for (const local of localComponents(sf)) {
@@ -106,11 +116,14 @@ export function gradeShadowPrimitive(screen: Screen): GradeResult<ShadowDetails>
       compositions.push({ name: local.name, wraps });
       continue;
     }
-    flagged.push(local.node);
-    findings.push({ rule: 'name', primitive: rule.primitive, line: local.line, message: `local ${local.name} re-implements ${rule.primitive}` });
+    flagged.push({ node: local.node, kind: kindOf(rule.primitive, kinds) });
+    all.push({ rule: 'name', primitive: rule.primitive, line: local.line, message: `local ${local.name} re-implements ${rule.primitive}` });
   }
 
-  const inFlagged = (node: ts.Node) => flagged.some((f) => node.pos >= f.pos && node.end <= f.end);
+  // A finding inside a flagged local component is already said, unless the component is only a visual
+  // copy and the finding is a behaviour one: a hand-drawn CtaButton may keep its look, not its own scale press.
+  const inFlagged = (node: ts.Node, primitive: string) =>
+    flagged.some((f) => node.pos >= f.node.pos && node.end <= f.node.end && (f.kind === 'behaviour' || kindOf(primitive, kinds) === 'visual'));
   const reactNativeImports = importedFrom(sf, 'react-native');
   const animatesScale = /\bAnimated\.(?:spring|timing)\s*\(/.test(screen.code) && /\bscale\b/.test(screen.code);
   let rawPressables = 0;
@@ -119,18 +132,20 @@ export function gradeShadowPrimitive(screen: Screen): GradeResult<ShadowDetails>
     const name = tagName(tag);
     if (RAW_PRESSABLES.has(name) && reactNativeImports.has(name)) {
       rawPressables += 1;
-      if (animatesScale && hasAttribute(tag, ['onPressIn', 'onPressOut']) && !inFlagged(tag)) {
-        findings.push({ rule: 'scale-press', primitive: 'Press', line: lineOf(sf, tag.getStart()), message: `${name} with a scale animation re-implements Press` });
+      if (animatesScale && hasAttribute(tag, ['onPressIn', 'onPressOut']) && !inFlagged(tag, 'Press')) {
+        all.push({ rule: 'scale-press', primitive: 'Press', line: lineOf(sf, tag.getStart()), message: `${name} with a scale animation re-implements Press` });
       }
-    } else if (name === 'Modal' && reactNativeImports.has('Modal') && !inFlagged(tag)) {
-      findings.push({ rule: 'modal', primitive: 'Sheet', line: lineOf(sf, tag.getStart()), message: 'react-native Modal: use Sheet, which draws inside the screen' });
-    } else if (name === 'Svg' && attributeText(tag, 'viewBox')?.trim() === '0 0 24 24' && !inFlagged(tag)) {
-      findings.push({ rule: 'icon-svg', primitive: 'Icon', line: lineOf(sf, tag.getStart()), message: 'hand-drawn 24-unit icon: use Icon with a name from its table' });
+    } else if (name === 'Modal' && reactNativeImports.has('Modal') && !inFlagged(tag, 'Sheet')) {
+      all.push({ rule: 'modal', primitive: 'Sheet', line: lineOf(sf, tag.getStart()), message: 'react-native Modal: use Sheet, which draws inside the screen' });
+    } else if (name === 'Svg' && attributeText(tag, 'viewBox')?.trim() === '0 0 24 24' && !inFlagged(tag, 'Icon')) {
+      all.push({ rule: 'icon-svg', primitive: 'Icon', line: lineOf(sf, tag.getStart()), message: 'hand-drawn 24-unit icon: use Icon with a name from its table' });
     }
   }
 
-  findings.sort((a, b) => a.line - b.line);
-  return { pass: findings.length === 0, score: countScore(findings.length), details: { findings, compositions, rawPressables } };
+  const graded = all.map((f): ShadowFinding => ({ ...f, kind: kindOf(f.primitive, kinds) })).sort((a, b) => a.line - b.line);
+  const findings = graded.filter((f) => f.kind === 'behaviour');
+  const warnings = graded.filter((f) => f.kind === 'visual');
+  return { pass: findings.length === 0, score: countScore(findings.length), details: { findings, warnings, compositions, rawPressables } };
 }
 
 /** Function components declared anywhere in the file: `function Name()` and `const Name = () =>` (memo/forwardRef too). */

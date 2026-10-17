@@ -146,6 +146,7 @@
         "AiBadgeVariant"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "Label content a model produced: a result card, a generated image, a summary.",
       "archetypes": [
         "ai-chat",
@@ -226,6 +227,7 @@
         "toneOf"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "A person or brand in a list row, a header, a message, a card: photo, else initials on a palette tone; a presence dot when the app has presence.",
       "archetypes": [
         "profile",
@@ -356,6 +358,7 @@
         "BottomBarArrange"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "The pinned action bar under a product, cart, booking or form screen: one or two buttons, a stepper or price beside them, a total above them.",
       "archetypes": [
         "content-detail",
@@ -479,6 +482,7 @@
         "buttonHeight"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "Every text button: the screen CTA (xl), the bottom-bar pill (lg), inline actions (md, sm). Variants are the whole palette of fills.",
       "archetypes": [
         "*"
@@ -568,6 +572,7 @@
         "ChipSize"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A filter or option pill, a size circle, a swatch; selected is inverted.",
       "archetypes": [
         "filter-sort",
@@ -676,6 +681,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The message field of a chat screen, with send / stop in one button, above the keyboard.",
       "archetypes": [
         "ai-chat",
@@ -732,6 +738,7 @@
       ],
       "exports": [],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "A hairline between rows or sections; inset inside lists; vertical between stats.",
       "archetypes": [
         "*"
@@ -807,6 +814,7 @@
         "IconName"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "Every glyph: one closed table of names (`ICONS`), 2 px round stroke on a 24-unit grid, `filled` for a selected state; never a hand-drawn Svg.",
       "archetypes": [
         "*"
@@ -901,6 +909,7 @@
         "withCount"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A round icon-only control: header actions, hearts, close, add; badges and dots for counts.",
       "archetypes": [
         "*"
@@ -965,6 +974,7 @@
         "ListGroupVariant"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "Settings and menu groups: a caps title, rows on one card with inset rules, a footer line.",
       "archetypes": [
         "settings",
@@ -1071,6 +1081,7 @@
         "listRowMinHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "One settings, menu or detail row: icon, title and subtitle, a value, a chevron or a Toggle.",
       "archetypes": [
         "settings",
@@ -1178,6 +1189,7 @@
         "MessageBubbleProps"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The conversation of a chat screen, anchored to the bottom, following a streaming reply.",
       "archetypes": [
         "ai-chat",
@@ -1260,6 +1272,7 @@
         "noticeColor"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "An inline message inside content: a promo, a warning, a success line, an error, with one action or a dismiss. Not for empty or error screens (StateView).",
       "archetypes": [
         "cart-checkout",
@@ -1351,6 +1364,7 @@
         "pageDotSize"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "The page indicator of an onboarding pager, a hero carousel or a product gallery.",
       "archetypes": [
         "onboarding",
@@ -1456,6 +1470,7 @@
         "PhotoPlaceholder"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Any remote picture in content: product, cover, avatar well, hero. Loads behind a skeleton, falls back on error, takes an overlay.",
       "archetypes": [
         "home-feeds",
@@ -1577,6 +1592,7 @@
         "textActionSlop"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The one pressable under every custom control: scale, haptic, a required name.",
       "archetypes": [
         "*"
@@ -1646,6 +1662,7 @@
         "formatPrice"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A product in a grid or rail: image well, name, price with the old price struck, a heart.",
       "archetypes": [
         "home-feeds",
@@ -1731,6 +1748,7 @@
         "progressBarHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "Goal completion, a course or a step count, an upload: a track with a run, label and value above.",
       "archetypes": [
         "dashboards",
@@ -1833,6 +1851,7 @@
         "ratingStar"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "Stars with a value and count on a product, a place, a review; an input when the user rates.",
       "archetypes": [
         "content-detail",
@@ -1904,6 +1923,7 @@
         "stagger"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "An entrance for lists and cards: fade and rise once, staggered by index.",
       "archetypes": [
         "*"
@@ -1961,6 +1981,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "The viewfinder of a scan screen: corners and a scan line over the camera or a photo.",
       "archetypes": [
         "ai-scan",
@@ -2047,6 +2068,7 @@
         "backIcon"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "The top row of a screen the template owns: back, title, trailing actions; a large title on a root screen.",
       "archetypes": [
         "*"
@@ -2116,6 +2138,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "The dimming layer under a Sheet or over media; tap to close.",
       "archetypes": [
         "*"
@@ -2216,6 +2239,7 @@
         "searchFieldHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "The search box at the top of a list or a search screen: glyph, field, clear, optional Cancel.",
       "archetypes": [
         "search",
@@ -2300,6 +2324,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A list section's title row with an eyebrow and a 'See all' action.",
       "archetypes": [
         "home-feeds",
@@ -2378,6 +2403,7 @@
         "segmentedHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Two to five exclusive views on one screen: upcoming / past, all / selected, week / month.",
       "archetypes": [
         "orders-billing",
@@ -2473,6 +2499,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A bottom sheet inside the screen: filters, a size picker, the bag, options.",
       "archetypes": [
         "filter-sort",
@@ -2534,6 +2561,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The loading placeholder for any block of content.",
       "archetypes": [
         "loading",
@@ -2607,6 +2635,7 @@
         "SkeletonLeading"
       ],
       "since": "0.3.0",
+      "recipeKind": "behaviour",
       "use": "A list or feed while it loads: rows of an avatar or thumbnail and text bars, sized like the rows to come, one 'Loading' element for a screen reader.",
       "archetypes": [
         "loading",
@@ -2704,6 +2733,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A short message with one action over the bottom of the screen ('Removed · Undo').",
       "archetypes": [
         "cart-checkout",
@@ -2819,6 +2849,7 @@
         "trendOf"
       ],
       "since": "0.3.0",
+      "recipeKind": "visual",
       "use": "One number that matters: a label, the value in tabular figures with a unit, a change chip coloured by trend, a caption; tiles side by side in a row.",
       "archetypes": [
         "dashboards",
@@ -2939,6 +2970,7 @@
         "StateVariant"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "Empty, error and offline states of a screen or a list section.",
       "archetypes": [
         "error-empty",
@@ -3046,6 +3078,7 @@
         "stepperButton"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "A quantity in a cart row, a product page, a booking (guests, nights).",
       "archetypes": [
         "cart-checkout",
@@ -3134,6 +3167,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A model's reply as it arrives: a caret, minimal Markdown, one screen-reader announcement.",
       "archetypes": [
         "ai-chat",
@@ -3243,6 +3277,7 @@
         "tabBarRowHeight"
       ],
       "since": "0.4.0",
+      "recipeKind": "visual",
       "use": "The tabs at the foot of an app: two to five destinations, one current, as an inset floating capsule (iOS 26) or a full-width bar (Material 3, classic iOS); a round action beside it or raised between the tabs. The one tab bar a template draws until the host has tab chrome.",
       "archetypes": [
         "*"
@@ -3410,6 +3445,7 @@
         "textFieldHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Every form field: sign in, sign up, address, payment, profile; the kind picks the keyboard.",
       "archetypes": [
         "authentication",
@@ -3498,6 +3534,7 @@
         "ToggleSize"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "An on/off switch in a settings row or a filter.",
       "archetypes": [
         "settings",
@@ -3552,6 +3589,7 @@
         "initialAiTaskState"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The pure chat and task state machines behind useAiChat and useAiTask.",
       "archetypes": [
         "ai-chat",
@@ -3582,6 +3620,7 @@
         "stripMarkdown"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The minimal Markdown reader behind StreamingText.",
       "archetypes": [
         "ai-chat"
@@ -3604,6 +3643,7 @@
         "UseAiChatOptions"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A conversation over the host's ai.chat with streaming, stop, retry.",
       "archetypes": [
         "ai-chat"
@@ -3631,6 +3671,7 @@
         "AiTask"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "One AI call at a time with progress and cancel: describe a photo, generate images, transcribe.",
       "archetypes": [
         "ai-scan",
@@ -3661,6 +3702,7 @@
         "CountUpOptions"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A headline figure that counts up to its value.",
       "archetypes": [
         "dashboards",
@@ -3695,6 +3737,7 @@
         "countdownParts"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Time left until a moment: a sale's end, a booking hold, an OTP resend.",
       "archetypes": [
         "promotions",
@@ -3722,6 +3765,7 @@
       "props": [],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "Whether the OS asks for less motion; every animated recipe reads it.",
       "archetypes": [
         "*"

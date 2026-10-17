@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { after, describe, test } from 'node:test';
 import { FIXTURES_DIR } from './paths.ts';
 import { loadCatalog } from './catalog.ts';
-import { gradeCoverage, type Expect } from './coverage.ts';
+import { gradeCoverage, type CoverageDetails, type Expect } from './coverage.ts';
 import { gradeDialect, type DialectDetails } from './dialect.ts';
 import { extract, findFences } from './extract.ts';
 import { Typechecker, gradeOutput, type Grades } from './index.ts';
@@ -51,6 +51,7 @@ describe('good screen', () => {
         hallucinatedProps: 0,
         tokenViolations: 0,
         shadowFindings: 0,
+        shadowWarnings: 0,
         coverage: 1,
         stateCoverage: 1,
       },
@@ -366,8 +367,60 @@ describe('shadow-primitive', () => {
     );
     assert.deepEqual(
       d.findings.map((f) => `${f.rule}:${f.primitive}`),
-      ['name:Icon', 'scale-press:Press', 'icon-svg:Icon'],
+      ['scale-press:Press'],
     );
+    assert.deepEqual(
+      d.warnings.map((f) => `${f.rule}:${f.primitive}`),
+      ['name:Icon', 'icon-svg:Icon'],
+      'hand-drawn icons are a visual copy: reported, not failed',
+    );
+  });
+
+  test('a local Modal (Sheet, behaviour) fails; a local chip (Chip, visual) only warns', () => {
+    const modal = gradeShadowPrimitive(
+      parseScreen(
+        [
+          "import { Modal, Text } from 'react-native';",
+          'export default function Screen() { return <Modal visible><Text>Filters</Text></Modal>; }',
+        ].join('\n'),
+      ),
+    );
+    assert.equal(modal.pass, false);
+    assert.deepEqual(modal.details.findings.map((f) => `${f.rule}:${f.primitive}:${f.kind}`), ['modal:Sheet:behaviour']);
+    assert.deepEqual(modal.details.warnings, []);
+
+    const chip = gradeShadowPrimitive(
+      parseScreen(
+        [
+          "import { Pressable, Text } from 'react-native';",
+          'function FilterChip({ label }: { label: string }) { return <Pressable accessibilityRole="button"><Text>{label}</Text></Pressable>; }',
+          'export default function Screen() { return <FilterChip label="All" />; }',
+        ].join('\n'),
+      ),
+    );
+    assert.equal(chip.pass, true, 'a template may draw its own chips');
+    assert.equal(chip.score, 1);
+    assert.deepEqual(chip.details.findings, []);
+    assert.deepEqual(chip.details.warnings.map((f) => `${f.rule}:${f.primitive}:${f.kind}`), ['name:Chip:visual']);
+  });
+
+  test('a visual copy keeps its look, not a hand-made press: the scale press inside it still fails', () => {
+    const g = gradeShadowPrimitive(
+      parseScreen(
+        [
+          "import { Animated, Pressable, Text } from 'react-native';",
+          'function CtaButton() {',
+          '  const scale = new Animated.Value(1);',
+          '  const to = (v: number) => Animated.spring(scale, { toValue: v, useNativeDriver: true }).start();',
+          '  return <Pressable onPressIn={() => to(0.96)} onPressOut={() => to(1)}><Text>Buy</Text></Pressable>;',
+          '}',
+          'export default function Screen() { return <CtaButton />; }',
+        ].join('\n'),
+      ),
+    );
+    assert.equal(g.pass, false);
+    assert.deepEqual(g.details.findings.map((f) => `${f.rule}:${f.primitive}`), ['scale-press:Press']);
+    assert.deepEqual(g.details.warnings.map((f) => `${f.rule}:${f.primitive}`), ['name:Button']);
   });
 });
 
@@ -380,6 +433,59 @@ describe('coverage', () => {
     assert.deepEqual(d.used, ['Chip', 'Icon']);
     assert.deepEqual(d.missing, ['IconButton', 'Press', 'Reveal', 'SectionHeader', 'Skeleton', 'StateView']);
     assert.equal(g.pass1, true, 'coverage is reported, not part of pass@1');
+    const kinds = g.coverage.details as CoverageDetails;
+    assert.deepEqual(kinds.behaviour.missing, ['Press', 'Reveal', 'Skeleton', 'StateView'], 'the missing behaviour recipes are what fails it');
+    assert.deepEqual(kinds.visual.missing, ['IconButton', 'SectionHeader']);
+  });
+
+  const SHOP: Expect = { recipes: ['Button', 'Chip', 'ScreenHeader', 'Press', 'StateView'], states: [] };
+  const shopScreen = (body: string) =>
+    parseScreen(
+      [
+        "import Press from '../components/Press';",
+        "import StateView from '../components/StateView';",
+        "import { Text, View } from 'react-native';",
+        `export default function Shop() { return <View>${body}</View>; }`,
+      ].join('\n'),
+    );
+
+  test('a screen missing only visual recipes passes, with the score still the share of all expected', () => {
+    const g = gradeCoverage(shopScreen('<Press accessibilityLabel="Buy" onPress={() => undefined}><Text>Buy</Text></Press><StateView title="Nothing yet" />'), catalog, SHOP);
+    assert.equal(g.pass, true, 'Button, Chip and ScreenHeader are the template\'s look to draw');
+    assert.equal(g.score, 0.4);
+    assert.deepEqual(g.details.behaviour, { expected: ['Press', 'StateView'], used: ['Press', 'StateView'], missing: [] });
+    assert.deepEqual(g.details.visual, { expected: ['Button', 'Chip', 'ScreenHeader'], used: [], missing: ['Button', 'Chip', 'ScreenHeader'] });
+  });
+
+  test('a screen missing a behaviour recipe fails, however many visual ones it renders', () => {
+    const screen = parseScreen(
+      [
+        "import Button from '../components/Button';",
+        "import Chip from '../components/Chip';",
+        "import ScreenHeader from '../components/ScreenHeader';",
+        "import Press from '../components/Press';",
+        "import { View } from 'react-native';",
+        'export default function Shop() { return <View><ScreenHeader title="Shop" /><Chip label="All" /><Button label="Buy" /><Press accessibilityLabel="x" /></View>; }',
+      ].join('\n'),
+    );
+    const g = gradeCoverage(screen, catalog, SHOP);
+    assert.equal(g.pass, false);
+    assert.equal(g.score, 0.8, 'the old 80% bar would have passed it');
+    assert.deepEqual(g.details.behaviour.missing, ['StateView']);
+  });
+
+  test('an expected hook counts when the screen calls it', () => {
+    const expect: Expect = { recipes: ['useAiChat', 'MessageList'], states: [] };
+    const called = parseScreen(
+      [
+        "import useAiChat from '../components/useAiChat';",
+        "import MessageList from '../components/MessageList';",
+        'export default function Chat() { const chat = useAiChat(); return <MessageList messages={chat.messages} />; }',
+      ].join('\n'),
+    );
+    assert.equal(gradeCoverage(called, catalog, expect).pass, true);
+    const imported = parseScreen(["import useAiChat from '../components/useAiChat';", 'export default function Chat() { return null; }'].join('\n'));
+    assert.deepEqual(gradeCoverage(imported, catalog, expect).details.behaviour.missing, ['useAiChat', 'MessageList']);
   });
 
   test('a state counts when used as a value, not when it is only in the prop type', () => {
