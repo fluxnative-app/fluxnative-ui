@@ -29,7 +29,7 @@
     "components/Notice.tsx": "b2ee06283d2a747c2b56beb2decf4155bd338145587ab0ac1715cebbace8f1f6",
     "components/PageDots.tsx": "45c1c2ed1ee2450ad102987b9445b58ff5b8f9b8db508ec42c9290d958a21065",
     "components/Photo.tsx": "e3513e440683117a82ada9da66e9ebd42069dfee633cf660bcd85d5022cfeb0c",
-    "components/Press.tsx": "d71e9d2bb840625cfcac956fe2482e075ddf80bef993e9be843ac0ae96e76d1b",
+    "components/Press.tsx": "c1538e01eac692cf17686a28079e05cf89e60892bd81bf637ec4562b1d02d19e",
     "components/ProgressBar.tsx": "7f3f431ddb4ac5a70554ea34dcbd84c1cc4bc226b9437529e57c2c1d72d60653",
     "components/Rating.tsx": "d102cdf8d348673dd534a1c8cbeb9fd9667037fb0b7d664c256a8ea6ee316344",
     "components/Reveal.tsx": "16e6f79e758ae3001a3715cc8c4399e5ca32b205d6c3c239bc53541bcef9369b",

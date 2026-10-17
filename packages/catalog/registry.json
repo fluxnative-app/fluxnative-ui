@@ -1565,6 +1565,11 @@
           "type": "number"
         },
         {
+          "name": "minTarget",
+          "optional": true,
+          "type": "number|false"
+        },
+        {
           "name": "testID",
           "optional": true,
           "type": "string"
@@ -1574,12 +1579,16 @@
         "MIN_TARGET",
         "PressHaptic",
         "PressRole",
+        "minTargetSlop",
         "textActionSlop"
       ],
       "since": "0.1.0",
-      "use": "The one pressable under every custom control: scale, haptic, a required name.",
+      "use": "The one pressable under every custom control: scale, haptic, a required name; it reaches a 44 pt target by itself (hit slop grown on each short axis, layout unchanged). An explicit `hitSlop` wins; `minTarget={false}` for dense controls whose neighbours are closer than the slop would reach.",
       "archetypes": [
         "*"
+      ],
+      "indexOmit": [
+        "minTarget"
       ],
       "aliases": [
         "Press",

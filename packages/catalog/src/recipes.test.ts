@@ -50,6 +50,8 @@ function same(file: string, cases: Props[], adjust: (old: ReturnType<typeof rend
       const before = render(v0, el(component(v0, file), props), device);
       adjust(before);
       const after = render(kit, el(component(kit, file), props), device);
+      // Kit K12: Press measures its box to reach the 44 pt target (v0 did not); before the first layout its slop is v0's.
+      for (const pressable of allOf(after.view, 'Pressable')) delete pressable.props.onLayout;
       const where = `${file} ${JSON.stringify(props, (_key, value: unknown) => (typeof value === 'function' ? 'fn' : value))} ${JSON.stringify(device)}`;
       assert.deepEqual(after.view, before.view, `${where}: views`);
       assert.deepEqual(after.mount, before.mount, `${where}: mount`);

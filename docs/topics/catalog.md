@@ -212,7 +212,7 @@ restyles them; with the kit's tokens they draw exactly as before.
 | component | props |
 |---|---|
 | `Icon` | `name`(IconName) `size?`(24) `color?` `strokeWidth?`(2) `filled?` `accessibilityLabel?` — generated from the icon table (`ICONS`); a labelled icon is wrapped in a View that carries the accessibility props, a bare one is decorative |
-| `Press` | `onPress` `onLongPress?` `accessibilityLabel` `accessibilityRole?` `haptic?`('none'\|'light'\|'selection'\|'medium') `activeScale?` `hitSlop?` `disabled?` — defaults and spring from `interaction.press` (kit: 'none', 0.96, 0) |
+| `Press` | `onPress` `onLongPress?` `accessibilityLabel` `accessibilityRole?` `haptic?`('none'\|'light'\|'selection'\|'medium') `activeScale?` `hitSlop?` `minTarget?`(number\|false, 44) `disabled?` — defaults and spring from `interaction.press` (kit: 'none', 0.96, 0); measures its box and grows the slop on each axis short of `minTarget` (`minTargetSlop(width, height, base, min)`), layout unchanged; an explicit `hitSlop` wins, `minTarget={false}` keeps the brand's slop for dense controls whose neighbours sit closer |
 | `Reveal` | `index?` `delay?` `offset?` — entrance; offset, duration and `stagger(index)` (capped at 7 steps) from `interaction.reveal` |
 | `Skeleton` | `width?` `height?` `radius?`(`shape.well`) `circle?` — `interaction.skeleton`: an `opacity` pulse, or `color` between two palette roles |
 | `Scrim` | `progress`(Animated) `active` `onPress?` `accessibilityLabel?` |

@@ -82,7 +82,7 @@ export default function Home() {
 |Expo Router setup|`docs/topics/expo-router.md`|
 |Flux WebView, runtime styling|`docs/topics/runtime.md`|
 |Android chrome, iOS-only props|`docs/topics/android.md`|
-|Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`|`docs/topics/catalog.md`|
+|Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`. `Press` reaches a 44 pt target by itself (`minTarget`, default 44; `minTarget={false}` for dense controls; an explicit `hitSlop` wins)|`docs/topics/catalog.md`|
 |AI pack for Flux templates: `flux.ai` host contract, useAiChat/useAiTask, StreamingText, Composer, MessageList, ScanFrame|`docs/topics/ai.md`|
 |API stability: what changes in a minor vs a major, deprecation windows|`docs/topics/versioning.md`|
 |Design rules: beyond the kit's defaults, store-review readiness|`docs/llm/CRAFT.index.md`|
