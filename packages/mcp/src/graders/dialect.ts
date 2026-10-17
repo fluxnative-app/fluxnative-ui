@@ -3,7 +3,8 @@
 // allowlist, relative imports that must land on a shipped file, and the
 // web-only constructs (`DOM_RE`). Plus the prompt's "one default export".
 
-import { posix } from 'node:path';
+import { statSync } from 'node:fs';
+import { dirname, isAbsolute, join, posix, relative, resolve } from 'node:path';
 import ts from 'typescript';
 import type { Catalog } from './catalog.ts';
 import { SCREEN_DIR, forEachNode, hasDefaultExport, lineOf, type Screen } from './source.ts';
@@ -47,12 +48,27 @@ export interface DialectDetails {
   imports: string[];
 }
 
-export function gradeDialect(screen: Screen, catalog: Catalog, screenFile = `${SCREEN_DIR}/Screen.tsx`): GradeResult<DialectDetails> {
+/**
+ * `root` is template mode: the screen is `screenFile` inside a template's
+ * `files/` folder, a relative import must land on a file of that folder, and
+ * the bare allowlist is the full template contract (`TEMPLATE_IMPORTS`).
+ */
+export function gradeDialect(screen: Screen, catalog: Catalog, screenFile = `${SCREEN_DIR}/Screen.tsx`, root?: string): GradeResult<DialectDetails> {
   const violations: DialectViolation[] = [];
   const specs = importSpecifiers(screen);
   const shipped = new Set([...catalog.files, screenFile]);
 
   for (const [spec, line] of specs) {
+    if (root !== undefined) {
+      if (spec.startsWith('.')) {
+        const where = resolveInRoot(spec, screenFile, root);
+        if (where === 'escape') violations.push({ rule: 'relative', line, message: `'${spec}' escapes the template's files/ folder` });
+        if (where === 'missing') violations.push({ rule: 'relative', line, message: `relative import '${spec}' resolves to no file in the template` });
+      } else if (!TEMPLATE_IMPORTS.includes(spec)) {
+        violations.push({ rule: 'import', line, message: `import '${spec}' is not on the template allowlist (${TEMPLATE_IMPORTS.join(', ')}, relative files)` });
+      }
+      continue;
+    }
     if (spec.startsWith('.')) {
       const where = resolveRelative(spec, shipped);
       if (where === 'escape') violations.push({ rule: 'relative', line, message: `'${spec}' escapes files/; it is not in the shipped map` });
@@ -102,6 +118,23 @@ function importSpecifiers(screen: Screen): Map<string, number> {
     }
   }
   return found;
+}
+
+/** A relative import seen from `screenFile` (relative to `root`): a file under `root`, or why not. */
+function resolveInRoot(spec: string, screenFile: string, root: string): 'ok' | 'escape' | 'missing' {
+  const target = resolve(root, dirname(screenFile), spec);
+  const rel = relative(root, target);
+  if (rel === '' || rel.startsWith('..') || isAbsolute(rel)) return 'escape';
+  const candidates = [target, ...RESOLVE_EXTENSIONS.map((ext) => target + ext), ...RESOLVE_EXTENSIONS.map((ext) => join(target, `index${ext}`))];
+  return candidates.some(isFile) ? 'ok' : 'missing';
+}
+
+function isFile(path: string): boolean {
+  try {
+    return statSync(path).isFile();
+  } catch {
+    return false;
+  }
 }
 
 function resolveRelative(spec: string, shipped: Set<string>): 'ok' | 'escape' | 'missing' {

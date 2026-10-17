@@ -57,11 +57,12 @@ export function gradeCoverage(
     const name = catalogTag(screen, tag);
     if (name !== null && catalog.components.has(name)) used.add(name);
   }
-  // A hook counts when the screen calls it (`useAiChat()` imported from `../components/useAiChat`).
+  // A hook counts when the screen calls it (`useAiChat()` imported from `../components/useAiChat`);
+  // in a template, only a hook its manifest lists: its own `useCountdown` is not the recipe.
   forEachNode(screen.sf, (node) => {
     if (!ts.isCallExpression(node) || !ts.isIdentifier(node.expression)) return;
     const name = screen.componentImports.get(node.expression.text);
-    if (name !== undefined && kinds.has(name)) used.add(name);
+    if (name !== undefined && kinds.has(name) && (catalog.recipes?.has(name) ?? true)) used.add(name);
   });
   const hit = expect.recipes.filter((r) => used.has(r));
   const share = expect.recipes.length === 0 ? 1 : hit.length / expect.recipes.length;

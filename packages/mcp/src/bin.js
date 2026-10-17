@@ -1,27 +1,11 @@
 #!/usr/bin/env node
-// `fluxnative-ui-mcp`: strips the TypeScript of this package, @fluxnative/catalog
-// and the eval graders it imports (Node refuses to under node_modules), then
-// serves over stdio. Needs Node.js 22.15 or newer.
+// `fluxnative-ui-mcp`: serves the MCP tools over stdio. Needs Node.js 22.15 or newer.
+// `--version` and `--doctor` answer and exit instead: src/lane.ts.
 
-import module from 'node:module';
-import { readFileSync } from 'node:fs';
+import { registerTypeStripping } from './launch.js';
 
-const { registerHooks, stripTypeScriptTypes } = module;
-if (typeof registerHooks !== 'function' || typeof stripTypeScriptTypes !== 'function') {
-  console.error(`fluxnative-ui-mcp needs Node.js 22.15 or newer; this is ${process.version}.`);
-  process.exit(1);
-}
-const emitWarning = process.emitWarning;
-process.emitWarning = (warning, ...rest) => {
-  if (String(warning).startsWith('stripTypeScriptTypes')) return;
-  emitWarning.call(process, warning, ...rest);
-};
-const ours = (url) => url.includes('/packages/mcp/') || url.includes('/packages/catalog/') || url.includes('/node_modules/@fluxnative/');
-registerHooks({
-  load(url, context, nextLoad) {
-    if (!url.endsWith('.ts') || !ours(url)) return nextLoad(url, context);
-    return { format: 'module', source: stripTypeScriptTypes(readFileSync(new URL(url), 'utf8')), shortCircuit: true };
-  },
-});
-
-await import('./stdio.ts');
+registerTypeStripping('fluxnative-ui-mcp');
+const { laneCommand } = await import('./lane.ts');
+const lane = await laneCommand('fluxnative-ui-mcp', process.argv.slice(2));
+if (lane !== null) process.exitCode = lane;
+else await import('./stdio.ts');

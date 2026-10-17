@@ -513,3 +513,17 @@ describe('no code', () => {
     assert.deepEqual(g.typecheck.details, { skipped: 'no code block' });
   });
 });
+
+describe('shadow-primitive names', () => {
+  const local = (name: string) => `import React from 'react';\nimport { View } from 'react-native';\nfunction ${name}() {\n  return <View />;\n}\nexport default function S() {\n  return <${name} />;\n}\n`;
+  test('a bare Bar is a skeleton line or a chart bar, not a ScreenHeader; a qualified one still is', () => {
+    const bare = gradeShadowPrimitive(parseScreen(local('Bar'))).details;
+    assert.deepEqual([...bare.findings, ...bare.warnings], []);
+    for (const name of ['TopBar', 'NavBar', 'Header']) {
+      // ScreenHeader is a visual recipe (K3): a local copy is a warning, never a finding.
+      const details = gradeShadowPrimitive(parseScreen(local(name))).details;
+      assert.deepEqual(details.findings, [], name);
+      assert.deepEqual(details.warnings.map((f) => f.primitive), ['ScreenHeader'], name);
+    }
+  });
+});

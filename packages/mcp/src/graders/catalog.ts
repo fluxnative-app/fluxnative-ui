@@ -2,10 +2,13 @@
 // TypeScript parser: the files a relative import may reach, and for every
 // primitive the props its `export interface <Name>Props` declares.
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import ts from 'typescript';
 import { CATALOG_FILES } from './paths.ts';
+
+/** `fluxnative-catalog emit` writes it beside the layer it emitted. */
+export const MANIFEST_FILE = '.fluxnative-ui.json';
 
 export interface CatalogComponent {
   name: string;
@@ -21,6 +24,12 @@ export interface Catalog {
   files: string[];
   /** The primitives: default-exported components in `components/*.tsx` and one folder down (`components/commerce/ProductCard.tsx`). */
   components: Map<string, CatalogComponent>;
+  /**
+   * Template mode: the names of the recipe files `.fluxnative-ui.json` lists under `components/`
+   * (`Chip`, `useReducedMotion`), hooks included. A hook the template wrote itself under a recipe's
+   * name is not that recipe. Absent for the kit's own layer, where every file is a recipe.
+   */
+  recipes?: ReadonlySet<string>;
 }
 
 const memo = new Map<string, Catalog>();
@@ -29,6 +38,36 @@ export function loadCatalog(dir: string = CATALOG_FILES): Catalog {
   const hit = memo.get(dir);
   if (hit) return hit;
   const files = walk(dir).map((file) => relative(dir, file).split('\\').join('/'));
+  const catalog = { files, components: readComponents(dir, files) };
+  memo.set(dir, catalog);
+  return catalog;
+}
+
+/**
+ * A Flux template's view of the layer: `files` is every file under its
+ * `files/` folder, `components` only the recipes `.fluxnative-ui.json` says
+ * were emitted into it (props read from those copies, forks included). The
+ * template's own components are not recipes, so props and coverage leave them
+ * alone. `manifest` is false when the template has no manifest (a legacy
+ * template): it then has no recipes at all.
+ */
+export function loadTemplateCatalog(root: string): Catalog & { manifest: boolean } {
+  const files = walk(root).map((file) => relative(root, file).split('\\').join('/'));
+  const manifestPath = join(root, MANIFEST_FILE);
+  if (!existsSync(manifestPath)) return { files, components: new Map(), recipes: new Set(), manifest: false };
+  let doc: unknown;
+  try {
+    doc = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  } catch (error) {
+    throw new Error(`${manifestPath}: ${(error as Error).message}`);
+  }
+  const listed = typeof doc === 'object' && doc !== null ? (doc as { files?: unknown }).files : undefined;
+  const emitted = new Set(Array.isArray(listed) ? listed.map(String) : typeof listed === 'object' && listed !== null ? Object.keys(listed) : []);
+  const recipes = new Set([...emitted].flatMap((rel) => /^components\/(?:[^/]+\/)?([^/]+)\.tsx?$/.exec(rel)?.slice(1, 2) ?? []));
+  return { files, components: readComponents(root, files.filter((rel) => emitted.has(rel))), recipes, manifest: true };
+}
+
+function readComponents(dir: string, files: string[]): Map<string, CatalogComponent> {
   const sources = files
     .filter((rel) => /^components\/(?:[^/]+\/)?[^/]+\.tsx$/.test(rel))
     .map((rel) => ts.createSourceFile(rel, readFileSync(join(dir, rel), 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX));
@@ -47,10 +86,7 @@ export function loadCatalog(dir: string = CATALOG_FILES): Catalog {
     const open = !collect(`${name}Props`, interfaces, props, required, new Set());
     components.set(name, { name, props, required, open });
   }
-
-  const catalog = { files, components };
-  memo.set(dir, catalog);
-  return catalog;
+  return components;
 }
 
 /** Adds the interface's members to `props`; false when part of it can't be resolved. */
@@ -99,7 +135,7 @@ function defaultFunctionName(sf: ts.SourceFile): string | null {
 function walk(dir: string): string[] {
   const out: string[] = [];
   for (const entry of readdirSync(dir).sort()) {
-    if (entry.startsWith('.')) continue;
+    if (entry.startsWith('.') || entry === 'node_modules') continue;
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) out.push(...walk(full));
     else out.push(full);

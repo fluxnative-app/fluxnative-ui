@@ -88,3 +88,5 @@ export default function Home() {
 |API stability: what changes in a minor vs a major, deprecation windows|`docs/topics/versioning.md`|
 |Recipe `recipeKind` in `registry.json`: `behaviour` (Press, TextField, Sheet, StateView, Photo, AI hooks…) a screen must use, never copy — `validate_screen` and coverage fail it; `visual` (Button, Chip, ScreenHeader…) may be redrawn, only a warning|`docs/topics/catalog.md`|
 |Design rules: beyond the kit's defaults, store-review readiness|`docs/llm/CRAFT.index.md`|
+|Grade screens without MCP: `fluxnative-ui-grade [--root <files/>] [--expect <file.json>] [--json] <screen.tsx | dir>...` runs every grader, typecheck included; `--root` grades a Flux template's screens in place; exit 0 pass, 2 fail, 1 error|`packages/mcp/README.md`|
+|Agent lanes: run the MCP server and the grader from a kit worktree pinned by commit; `--doctor` (Node, installed deps, MCP `initialize`) before work, `--version --json` → `{version, commit}` to prove the pin, `.mcp.json` entry|`packages/mcp/README.md` "Run it in an agent lane"|
