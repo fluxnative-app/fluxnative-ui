@@ -1,4 +1,4 @@
-// Kit 0.7: the dock inset. "Content under a floating dock at rest" (p0.overlap)
+// Kit 0.7 in the factory's numbering, shipped in @fluxnative/catalog 0.1.0: the dock inset. "Content under a floating dock at rest" (p0.overlap)
 // was the most frequent blocking failure of the template factory's batches 23,
 // 25 and 26: no dock told the screen how tall it was, so every builder padded
 // its scroll content by hand, and many forgot.

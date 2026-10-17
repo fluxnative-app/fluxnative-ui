@@ -319,7 +319,9 @@ machine-readable catalogue behind `CATALOG.index.md`: every component with
 its `kind` (component, hook, module), `path`, `from` (the import a screen
 writes), `summary`, `props` (name, optional, type, read from
 `export interface <Name>Props`), named `exports`, transitive `deps`, and the
-metadata of `registry.meta.json`: `since`, `use`, `archetypes` (OpenDesign's
+metadata of `registry.meta.json`: `since` (the `@fluxnative/catalog` npm
+version the entry first ships in, the version a fork records; values above
+0.1.0 on older entries are the pre-release kit line), `use`, `archetypes` (OpenDesign's
 30 plus the five AI ones; `*` means any screen), `aliases`, `recipeKind`
 (`behaviour` or `visual`, above), `evidence` and `mobbin`. It also carries the dialect (allowed imports, forbidden constructs)
 and the token keys. `pnpm tokens` regenerates it and `pnpm tokens:check`

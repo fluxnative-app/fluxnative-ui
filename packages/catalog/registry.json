@@ -3817,7 +3817,7 @@
         "dockStore",
         "useReportDock"
       ],
-      "since": "0.7.0",
+      "since": "0.1.0",
       "recipeKind": "behaviour",
       "use": "The bottom padding scroll content needs so nothing rests under a floating dock: wrap the screen in DockInsetProvider, give the scroll content paddingBottom: useDockInset(). The kit's overlay TabBar and an absolutely placed BottomBar report themselves; a template's own dock (TabDock, PillDock) puts onLayout={useReportDock({ bottom })} on its outer view. dockInset() is the pure sum: height + bottom offset + safe area not already counted + a 16 pt gap; two docks take the larger, 0 with none.",
       "archetypes": [
