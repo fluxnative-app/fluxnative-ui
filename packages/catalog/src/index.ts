@@ -44,4 +44,4 @@ export {
 } from './update.ts';
 export { catalogCommit } from './git.ts';
 export { components, renderCatalogIndex, CATALOG_INDEX_LIMIT, type Component, type ComponentKind } from './catalog-index.ts';
-export { renderRegistry, renderRegistryJson, readRegistryMeta, REGISTRY_FILE, REGISTRY_META_FILE, REGISTRY_VERSION, type Registry, type RegistryEntry, type ComponentMeta } from './registry.ts';
+export { renderRegistry, renderRegistryJson, readRegistryMeta, RECIPE_KINDS, REGISTRY_FILE, REGISTRY_META_FILE, REGISTRY_VERSION, type Registry, type RegistryEntry, type ComponentMeta, type RecipeKind } from './registry.ts';

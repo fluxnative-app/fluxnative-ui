@@ -85,4 +85,5 @@ export default function Home() {
 |Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`|`docs/topics/catalog.md`|
 |AI pack for Flux templates: `flux.ai` host contract, useAiChat/useAiTask, StreamingText, Composer, MessageList, ScanFrame|`docs/topics/ai.md`|
 |API stability: what changes in a minor vs a major, deprecation windows|`docs/topics/versioning.md`|
+|Recipe `recipeKind` in `registry.json`: `behaviour` (Press, TextField, Sheet, StateView, Photo, AI hooks…) a screen must use, never copy — `validate_screen` and coverage fail it; `visual` (Button, Chip, ScreenHeader…) may be redrawn, only a warning|`docs/topics/catalog.md`|
 |Design rules: beyond the kit's defaults, store-review readiness|`docs/llm/CRAFT.index.md`|

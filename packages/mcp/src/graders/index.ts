@@ -26,6 +26,8 @@ export interface Metrics {
   hallucinatedProps: number;
   tokenViolations: number;
   shadowFindings: number;
+  /** Hand-drawn copies of visual recipes: reported, never failed. */
+  shadowWarnings: number;
   coverage: number;
   stateCoverage: number;
 }
@@ -70,6 +72,7 @@ export function gradeOutput(output: string, target: GradeTarget, typechecker: Ty
         hallucinatedProps: 0,
         tokenViolations: 0,
         shadowFindings: 0,
+        shadowWarnings: 0,
         coverage: 0,
         stateCoverage: 0,
       },
@@ -101,6 +104,7 @@ export function gradeOutput(output: string, target: GradeTarget, typechecker: Ty
       hallucinatedProps: props.details.hallucinated.length,
       tokenViolations: tokens.details.violations.length,
       shadowFindings: shadowPrimitive.details.findings.length,
+      shadowWarnings: shadowPrimitive.details.warnings.length,
       coverage: coverage.details.share,
       stateCoverage: coverage.details.states.share,
     },

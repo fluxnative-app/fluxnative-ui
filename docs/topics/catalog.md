@@ -258,6 +258,22 @@ apps on Mobbin (`mobbin`, one link per screen it follows). The
 aliases, so a template that writes its own `SearchPill` or `QtyStepper` is
 pointed at the recipe.
 
+Each recipe also has a `recipeKind`. `behaviour` recipes own an interaction
+or system contract that a hand-made copy tends to break: the press target and
+its feedback (`Press`), text input, switch / adjustable / tablist semantics
+(`Toggle`, `Stepper`, `SegmentedControl`), modal dismissal (`Sheet`), live
+announcements (`Snackbar`, `StreamingText`), loading / empty / error states
+(`StateView`, `Skeleton`, `SkeletonRows`), reduced motion (`Reveal`), remote
+image loading with alt and fallback (`Photo`), the chat list's reading order
+and anchoring (`MessageList`), and the AI and timing hooks. `visual` recipes
+are presentation (`Button`, `Chip`, `ScreenHeader`, `TabBar`, the commerce
+pack…): a template's look is its identity, and forcing one drawing on every
+template makes them look alike (App Store 4.3). So the graders treat the two
+apart: `coverage` passes when every expected behaviour recipe is rendered
+(its `score` is still the share of all expected ones), and `shadow-primitive`
+fails a local copy of a behaviour recipe but only lists a copy of a visual
+one under `warnings`.
+
 ## The registry (`registry.json`)
 
 `fluxnative-catalog registry` writes `packages/catalog/registry.json`, the
@@ -266,11 +282,11 @@ its `kind` (component, hook, module), `path`, `from` (the import a screen
 writes), `summary`, `props` (name, optional, type, read from
 `export interface <Name>Props`), named `exports`, transitive `deps`, and the
 metadata of `registry.meta.json`: `since`, `use`, `archetypes` (OpenDesign's
-30 plus the five AI ones; `*` means any screen), `aliases`, `evidence` and
-`mobbin`. It also carries the dialect (allowed imports, forbidden constructs)
+30 plus the five AI ones; `*` means any screen), `aliases`, `recipeKind`
+(`behaviour` or `visual`, above), `evidence` and `mobbin`. It also carries the dialect (allowed imports, forbidden constructs)
 and the token keys. `pnpm tokens` regenerates it and `pnpm tokens:check`
-fails on drift; a component without a `registry.meta.json` entry fails the
-build, so every recipe ships with its evidence. The MCP server
+fails on drift; a component without a `registry.meta.json` entry, or with no
+valid `recipeKind`, fails the build, so every recipe ships with its evidence. The MCP server
 ([`packages/mcp`](../../packages/mcp/README.md)) and tools outside this
 repo read it instead of parsing sources.
 

@@ -162,7 +162,7 @@ export function createServer(): McpServer {
     {
       title: 'Validate a screen',
       description:
-        'Run the deterministic graders of the kit over a screen source (template dialect): forbidden imports and web constructs, props a catalog component does not declare, hex / rgb / size literals, local components that re-implement a recipe. Returns pass and a short "next" list. Typecheck is not included; run `pnpm eval` or tsc for that.',
+        'Run the deterministic graders of the kit over a screen source (template dialect): forbidden imports and web constructs, props a catalog component does not declare, hex / rgb / size literals, local components that re-implement a behaviour recipe (a copy of a visual recipe such as Button or Chip is only a warning in `shadowPrimitive.warnings`). Returns pass and a short "next" list. Typecheck is not included; run `pnpm eval` or tsc for that.',
       inputSchema: { source: z.string().min(1).describe('The full TSX source of one screen'), screenName: z.string().optional().describe('The default export name (default Screen)') },
     },
     async ({ source, screenName }) => text(validateScreen(source, screenName ?? 'Screen')),

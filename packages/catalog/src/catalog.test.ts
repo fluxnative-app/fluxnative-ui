@@ -475,3 +475,15 @@ test('the index and registry stay honest: every component the index names is rea
   assert.deepEqual(registry.components.filter((c) => c.kind !== 'module' && !topic.includes(`\`${c.name}\``)).map((c) => c.name), [], 'every component documented');
   assert.deepEqual(registry.components.filter((c) => !c.use || !c.evidence || (!c.evidence.note && !c.evidence.templates)).map((c) => c.name), [], 'every recipe with use and evidence');
 });
+
+test('every registry entry has a valid recipeKind, next to its untouched component / hook / module kind', async () => {
+  // The screen graders require behaviour recipes and leave visual ones to the template: a recipe without a kind can't ship.
+  const { renderRegistry, readRegistryMeta, RECIPE_KINDS } = await import('./registry.ts');
+  const registry = renderRegistry();
+  assert.deepEqual(registry.components.filter((c) => !RECIPE_KINDS.includes(c.recipeKind)).map((c) => c.name), [], 'every entry has behaviour or visual');
+  assert.deepEqual(Object.entries(readRegistryMeta()).filter(([, m]) => !RECIPE_KINDS.includes(m.recipeKind)).map(([name]) => name), [], 'every meta entry too');
+  assert.deepEqual(registry.components.filter((c) => !['component', 'hook', 'module'].includes(c.kind)).map((c) => c.name), [], 'kind keeps its own meaning');
+  const kindOf = (name: string) => registry.components.find((c) => c.name === name)?.recipeKind;
+  for (const name of ['Press', 'Toggle', 'TextField', 'Sheet', 'StateView', 'Photo', 'useAiChat', 'useReducedMotion']) assert.equal(kindOf(name), 'behaviour', name);
+  for (const name of ['Button', 'Chip', 'Icon', 'ScreenHeader', 'TabBar', 'ProductCard']) assert.equal(kindOf(name), 'visual', name);
+});
