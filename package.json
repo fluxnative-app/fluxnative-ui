@@ -13,7 +13,9 @@
     "changeset": "changeset",
     "release": "turbo run build && changeset publish",
     "tokens:check": "node packages/tokens/src/build.ts --check --global-css apps/expo-example/src/global.css && node packages/glass/src/build-hosts.ts --check && node packages/catalog/src/cli.ts build --check && node packages/catalog/src/cli.ts index --check && node packages/catalog/src/cli.ts registry --check",
-    "catalog": "node packages/catalog/src/cli.ts"
+    "catalog": "node packages/catalog/src/cli.ts",
+    "mcp": "node packages/mcp/src/bin.js",
+    "grade": "node packages/mcp/src/grade.js"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.0",

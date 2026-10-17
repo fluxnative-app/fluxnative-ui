@@ -425,6 +425,9 @@ test('the catalog index fits the budget, lists every component and the token rol
   }
   assert.match(index, /\|`type`\|display headline title body bodySm label caps numeric\|/);
   assert.match(index, /\|`elevation`\|0 1 2 3 4\|/);
+  // 0.1.0 props that once sat in indexOmit for lack of room: a model has to see them to use them.
+  for (const prop of ['minTarget?(number\\|false)', 'placeholderColor?(muted/', 'fallbackIcon?(']) assert.ok(index.includes(prop), prop);
+  assert.doesNotMatch(index, /readonly |accessibilityState\?\(|\(DimensionValue\)/, 'no bytes on what the prop name or the legend already says');
   assert.doesNotMatch(index.replace(/\\\|/g, ''), /\|[^|\n]*'[a-z]+'\|'/, 'pipes inside a cell are escaped');
   const committed = readFileSync(join(import.meta.dirname, '..', '..', '..', 'docs', 'llm', 'CATALOG.index.md'), 'utf8');
   assert.equal(committed, index, 'run `pnpm tokens` to regenerate docs/llm/CATALOG.index.md');
@@ -474,4 +477,17 @@ test('the index and registry stay honest: every component the index names is rea
   const topic = readFileSync(join(import.meta.dirname, '..', '..', '..', 'docs', 'topics', 'catalog.md'), 'utf8');
   assert.deepEqual(registry.components.filter((c) => c.kind !== 'module' && !topic.includes(`\`${c.name}\``)).map((c) => c.name), [], 'every component documented');
   assert.deepEqual(registry.components.filter((c) => !c.use || !c.evidence || (!c.evidence.note && !c.evidence.templates)).map((c) => c.name), [], 'every recipe with use and evidence');
+});
+
+test('every registry entry has a valid recipeKind, next to its untouched component / hook / module kind', async () => {
+  // The screen graders require behaviour recipes and leave visual ones to the template: a recipe without a kind can't ship.
+  const { renderRegistry, readRegistryMeta, RECIPE_KINDS } = await import('./registry.ts');
+  const registry = renderRegistry();
+  assert.deepEqual(registry.components.filter((c) => !RECIPE_KINDS.includes(c.recipeKind)).map((c) => c.name), [], 'every entry has behaviour or visual');
+  assert.deepEqual(Object.entries(readRegistryMeta()).filter(([, m]) => !RECIPE_KINDS.includes(m.recipeKind)).map(([name]) => name), [], 'every meta entry too');
+  assert.deepEqual(registry.components.filter((c) => !['component', 'hook', 'module'].includes(c.kind)).map((c) => c.name), [], 'kind keeps its own meaning');
+  const kindOf = (name: string) => registry.components.find((c) => c.name === name)?.recipeKind;
+  // Named too: the entries the 0.1.0 release merged in after K3 (K12 Press, K4 Photo and Avatar, K13 the dock inset).
+  for (const name of ['Press', 'Toggle', 'TextField', 'Sheet', 'StateView', 'Photo', 'useAiChat', 'useReducedMotion', 'useDockInset']) assert.equal(kindOf(name), 'behaviour', name);
+  for (const name of ['Button', 'Chip', 'Icon', 'ScreenHeader', 'TabBar', 'BottomBar', 'Avatar', 'ProductCard']) assert.equal(kindOf(name), 'visual', name);
 });

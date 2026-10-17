@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { createServer, getComponent, searchComponents, validateScreen } from './server.ts';
+import { createServer, getArchetype, getComponent, searchComponents, validateScreen } from './server.ts';
 
 test('search_components ranks the recipe a plain-words need points at, by name, alias, use line and archetype', () => {
   assert.equal(searchComponents('row in a settings list with a chevron')[0]?.name, 'ListRow');
@@ -20,6 +20,28 @@ test('get_component answers by name or alias, with props and optionally the sour
   assert.ok(stepper?.props.some((p) => p.name === 'accessibilityLabel' && !p.optional));
   assert.match(stepper?.source ?? '', /export default function Stepper/);
   assert.equal(getComponent('Nope', false), null);
+});
+
+test('get_archetype lists the recipes made for an archetype, then the general ones, with summary and use line', () => {
+  const checkout = getArchetype('cart-checkout');
+  assert.ok(!('error' in checkout));
+  assert.ok(checkout.recipes.some((r) => r.name === 'Stepper' && r.summary !== '' && r.use !== '' && r.from.endsWith('/Stepper')));
+  assert.ok(checkout.general.some((r) => r.name === 'Button'));
+  assert.ok(!checkout.general.some((g) => checkout.recipes.some((r) => r.name === g.name)));
+  assert.ok(checkout.behaviour.includes('Press') && !checkout.behaviour.includes('Button'), 'behaviour recipes only');
+  assert.ok(checkout.behaviour.every((name) => [...checkout.recipes, ...checkout.general].some((r) => r.name === name)));
+  const other = getArchetype('other');
+  assert.ok(!('error' in other));
+  assert.deepEqual(other.recipes, []);
+  assert.ok(other.general.length > 0);
+});
+
+test('get_archetype answers an unknown archetype with the valid ones', () => {
+  const answer = getArchetype('checkout');
+  assert.ok('error' in answer);
+  assert.match(answer.error, /checkout/);
+  assert.equal(answer.valid.length, 35);
+  assert.ok(answer.valid.includes('cart-checkout') && answer.valid.includes('ai-chat'));
 });
 
 const GOOD = `import React from 'react';
@@ -48,19 +70,45 @@ test('validate_screen passes a clean screen and names what is wrong with a dirty
   assert.ok(bad.next.some((line) => line.startsWith('tokens:')));
 });
 
-test('the server lists its six tools and answers get_index under 9 KB over an in-memory transport', async () => {
+test('the server lists its seven tools and answers get_index under 9 KB over an in-memory transport', async () => {
   const server = createServer();
   const client = new Client({ name: 'test', version: '0' });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map((t) => t.name).sort(), ['get_component', 'get_design_rules', 'get_index', 'list_tokens', 'search_components', 'validate_screen']);
+  assert.deepEqual(tools.map((t) => t.name).sort(), ['get_archetype', 'get_component', 'get_design_rules', 'get_index', 'list_tokens', 'search_components', 'validate_screen']);
   const index = await client.callTool({ name: 'get_index', arguments: {} });
   const body = (index.content as Array<{ type: string; text: string }>)[0]?.text ?? '';
   assert.ok(body.startsWith('<!-- fluxnative-ui:catalog-index'));
   assert.ok(Buffer.byteLength(body) <= 9 * 1024);
   const found = await client.callTool({ name: 'search_components', arguments: { query: 'avatar with online dot' } });
   assert.match((found.content as Array<{ text: string }>)[0]?.text ?? '', /"name": "Avatar"/);
+  const settings = await client.callTool({ name: 'get_archetype', arguments: { archetype: 'settings' } });
+  assert.match((settings.content as Array<{ text: string }>)[0]?.text ?? '', /"name": "ListRow"/);
+  assert.match((settings.content as Array<{ text: string }>)[0]?.text ?? '', /"behaviour": \[/);
+  const unknown = await client.callTool({ name: 'get_archetype', arguments: { archetype: 'nope' } });
+  assert.equal(unknown.isError, true);
+  assert.match((unknown.content as Array<{ text: string }>)[0]?.text ?? '', /"valid"/);
+  await client.close();
+  await server.close();
+});
+
+test('get_design_rules serves CRAFT.index.md: versioned, at most 4 KB, real photos allowed and placeholder services not', async () => {
+  const server = createServer();
+  const client = new Client({ name: 'test', version: '0' });
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+  const rules = await client.callTool({ name: 'get_design_rules', arguments: {} });
+  const body = (rules.content as Array<{ type: string; text: string }>)[0]?.text ?? '';
+  assert.match(body, /^<!-- fluxnative-ui:craft-index v\d+\.\d+\.\d+ /);
+  assert.ok(Buffer.byteLength(body) <= 4096, `CRAFT.index.md is ${Buffer.byteLength(body)} bytes`);
+  const imagery = body.split('\n').find((line) => line.startsWith('5. **Imagery.**')) ?? '';
+  assert.match(imagery, /Unsplash API/);
+  assert.doesNotMatch(imagery, /never Unsplash/i);
+  assert.match(imagery, /`Photo` with `alt` and `fallback`/);
+  assert.match(imagery, /Never picsum or placeholder services/);
+  const palette = body.split('\n').find((line) => line.startsWith('2. **Palette.**')) ?? '';
+  assert.match(palette, /built with depth, never flattened/);
   await client.close();
   await server.close();
 });

@@ -1,6 +1,6 @@
 {
   "name": "@fluxnative/glass",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "The FluxNative UI glass ladder: native Liquid Glass, blur, translucent or opaque — chosen per device and accessibility settings.",
   "license": "MIT",
   "repository": {

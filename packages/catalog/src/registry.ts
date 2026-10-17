@@ -28,9 +28,22 @@ export interface Evidence {
   note?: string;
 }
 
+/**
+ * What a recipe owns. `behaviour`: an interaction or system contract a
+ * hand-made copy tends to break (press target and feedback, text input,
+ * switch / adjustable / tablist semantics, modal dismissal, live
+ * announcements, loading / empty / error / streaming states, reduced motion,
+ * remote image loading, the AI hooks); the screen graders fail a screen that
+ * skips or re-implements one. `visual`: presentation only; a template may
+ * draw its own, since its look is part of its identity.
+ */
+export type RecipeKind = 'behaviour' | 'visual';
+export const RECIPE_KINDS: readonly RecipeKind[] = ['behaviour', 'visual'];
+
 /** One entry of registry.meta.json. */
 export interface ComponentMeta {
   since: string;
+  recipeKind: RecipeKind;
   use: string;
   /** OpenDesign archetypes (plus the five AI ones); `*` means any screen. */
   archetypes: string[];
@@ -97,7 +110,8 @@ export function renderRegistry(): Registry {
   const deps = componentDeps();
   const list = components().map((c): RegistryEntry => {
     const own = meta[c.name];
-    if (own === undefined) throw new Error(`registry.meta.json has no entry for ${c.name} (${c.path}): add its use, archetypes, aliases and evidence`);
+    if (own === undefined) throw new Error(`registry.meta.json has no entry for ${c.name} (${c.path}): add its use, recipeKind, archetypes, aliases and evidence`);
+    if (!RECIPE_KINDS.includes(own.recipeKind)) throw new Error(`registry.meta.json: ${c.name} needs a recipeKind, one of ${RECIPE_KINDS.join(' | ')} (got ${JSON.stringify(own.recipeKind)})`);
     return { ...c, ...own, deps: deps[c.name] ?? [] };
   });
   for (const name of Object.keys(meta)) {
@@ -124,6 +138,6 @@ export function renderRegistry(): Registry {
   };
 }
 
-export function renderRegistryJson(): string {
-  return `${JSON.stringify(renderRegistry(), null, 2)}\n`;
+export function renderRegistryJson(registry: Registry = renderRegistry()): string {
+  return `${JSON.stringify(registry, null, 2)}\n`;
 }

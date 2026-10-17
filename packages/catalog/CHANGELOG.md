@@ -1,5 +1,28 @@
 # @fluxnative/catalog
 
+## 0.1.0
+
+### Minor Changes
+
+- 056b419: The catalog now carries one canonical list of screen archetypes (`ARCHETYPES`: OpenDesign's 30 plus `ai-chat`, `ai-generate`, `ai-scan`, `ai-voice`, `ai-insight`) and a generated `registry.archetypes.json` that maps each archetype to the recipes made for it (most evidence first) and the general ones that fit any screen, plus `behaviour`: those of `recipeKind` behaviour, which every screen of the archetype is expected to use (`mapVersion` 2). `pnpm tokens` writes it with `registry.json`, `pnpm tokens:check` keeps it fresh, and an archetype in `registry.meta.json` that is not on the list fails the build. The MCP server adds `get_archetype { archetype }`, which answers that entry with each recipe's import path, summary and use line and the `behaviour` names, so an agent that has assigned a screen its archetype can pick its recipes in one call instead of searching for every part.
+- 7491251: A brand can give one `seed` colour (`$extensions["dev.fluxnative.brand"].seed`, or `"seed"` in a `colors.json`). The accent roles it does not set are then derived from that seed in both schemes, readable by construction: `primary`, `primary-foreground`, `ring`, `tertiary`, `tertiary-foreground`, `accent` and `accent-foreground`.
+
+  - `primary` keeps the seed's hue and moves just far enough to reach 4.5:1 on every surface the brand ends up with.
+  - `deriveSeedRoles`, `readableAccent` and `readableOn` are exported from `@fluxnative/tokens/brand`.
+
+  A brand without a seed resolves exactly as before. Applying this to the 98-template catalog writes the same bytes as without it.
+
+- 9c3a2c9: Add `useDockInset`, the bottom padding a scroll view's content needs so nothing rests under a floating dock. Wrap a screen in `DockInsetProvider` and give its scroll content `paddingBottom: useDockInset()`: the overlay `TabBar` and an absolutely placed `BottomBar` now measure themselves and report their height plus their lift from the bottom edge plus a 16 pt gap (the larger of two docks wins, 0 with none), and a template's own dock reports the same way through `onLayout={useReportDock({ bottom })}`. `dockInset()` is the pure sum. Content left under a dock at rest was the most frequent blocking failure in the template factory's recent batches; without a provider every dock draws and behaves exactly as before.
+- 8b56da6: `Photo` now degrades gracefully when a hotlinked picture disappears after a template ships: on the first error it shows `fallback`, or a well in the new `placeholderColor` (a closed set of surface roles, default `muted`) with a centred `fallbackIcon` (any `Icon` name or `'none'`, default `'image'`) in that role's readable ink, at the same size and radius, keeping `alt` on the frame and `children` overlays on top, with no retry or timer so web captures are deterministic. New `onLoad` and `onError` callbacks report the outcome, and a new `uri` in a recycled cell loads again. `Avatar` likewise retries a new `uri` and keeps its initials when the photo fails. Existing props and defaults are unchanged.
+- 3cfa035: `Press` now reaches the 44 pt touch target by itself: it measures its box with `onLayout` and grows the hit slop on each axis that is short of the new `minTarget` prop (default `MIN_TARGET`, 44), never under the brand's `interaction.press.hitSlop`, without changing layout or look. Templates no longer miss the 44 pt check because a caller forgot to add slop. An explicit `hitSlop` still wins, so recipes and templates that compute their own keep their behaviour, and `minTarget={false}` keeps the brand's slop for dense controls whose neighbours sit closer than the slop would reach. The per-axis computation is exported as `minTargetSlop(width, height, base, min)`; `textActionSlop()` is unchanged.
+- 3d2e6b4: Every recipe and hook in the catalog now carries a `recipeKind` in `registry.meta.json` and `registry.json`: `behaviour` when it owns an interaction or system contract a hand-made copy tends to break (Press, TextField, Toggle, Sheet, StateView, Photo, MessageList, the AI and timing hooks…), `visual` when it is presentation only (Button, Chip, ScreenHeader, TabBar, the commerce pack…). The registry build fails on an entry without one. The screen graders use it so templates keep their own look without re-implementing behaviour: `coverage` passes when every expected behaviour recipe is rendered (its `score` stays the share of all expected recipes, and `details.behaviour` / `details.visual` list expected, used and missing), and `shadow-primitive` still fails a local copy of a behaviour recipe but reports a copy of a visual one under `details.warnings` without failing. An expected hook now counts as used when the screen calls it.
+
+### Patch Changes
+
+- Updated dependencies [7491251]
+  - @fluxnative/tokens@0.1.0
+  - @fluxnative/icons@0.1.0
+
 ## 0.0.1
 
 ### Minor Changes

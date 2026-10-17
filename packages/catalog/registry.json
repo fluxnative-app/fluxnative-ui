@@ -2,7 +2,7 @@
   "$schema": "https://github.com/fluxnative-app/fluxnative-ui/blob/main/docs/topics/registry.md",
   "registryVersion": 1,
   "catalog": {
-    "version": "0.0.1"
+    "version": "0.1.0"
   },
   "dialect": {
     "imports": [
@@ -146,6 +146,7 @@
         "AiBadgeVariant"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "Label content a model produced: a result card, a generated image, a summary.",
       "archetypes": [
         "ai-chat",
@@ -226,6 +227,7 @@
         "toneOf"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "A person or brand in a list row, a header, a message, a card: photo, else initials on a palette tone (also while it loads and when the URL fails); a presence dot when the app has presence.",
       "archetypes": [
         "profile",
@@ -356,7 +358,8 @@
         "BottomBarArrange"
       ],
       "since": "0.2.0",
-      "use": "The pinned action bar under a product, cart, booking or form screen: one or two buttons, a stepper or price beside them, a total above them.",
+      "recipeKind": "visual",
+      "use": "The pinned action bar under a product, cart, booking or form screen: one or two buttons, a stepper or price beside them, a total above them. In the screen's column after the scroll view it takes its own space; placed over the content (style position 'absolute') it reports its height to the nearest DockInsetProvider, so the scroll content pads by useDockInset().",
       "archetypes": [
         "content-detail",
         "cart-checkout",
@@ -390,12 +393,15 @@
         }
       ],
       "indexOmit": [
-        "arrange"
+        "arrange",
+        "bottom",
+        "children"
       ],
       "deps": [
         "Button",
         "Press",
         "bridge",
+        "useDockInset",
         "useReducedMotion"
       ]
     },
@@ -479,6 +485,7 @@
         "buttonHeight"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "Every text button: the screen CTA (xl), the bottom-bar pill (lg), inline actions (md, sm). Variants are the whole palette of fills.",
       "archetypes": [
         "*"
@@ -568,6 +575,7 @@
         "ChipSize"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A filter or option pill, a size circle, a swatch; selected is inverted.",
       "archetypes": [
         "filter-sort",
@@ -676,6 +684,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The message field of a chat screen, with send / stop in one button, above the keyboard.",
       "archetypes": [
         "ai-chat",
@@ -732,6 +741,7 @@
       ],
       "exports": [],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "A hairline between rows or sections; inset inside lists; vertical between stats.",
       "archetypes": [
         "*"
@@ -807,6 +817,7 @@
         "IconName"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "Every glyph: one closed table of names (`ICONS`), 2 px round stroke on a 24-unit grid, `filled` for a selected state; never a hand-drawn Svg.",
       "archetypes": [
         "*"
@@ -901,6 +912,7 @@
         "withCount"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A round icon-only control: header actions, hearts, close, add; badges and dots for counts.",
       "archetypes": [
         "*"
@@ -965,6 +977,7 @@
         "ListGroupVariant"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "Settings and menu groups: a caps title, rows on one card with inset rules, a footer line.",
       "archetypes": [
         "settings",
@@ -1071,6 +1084,7 @@
         "listRowMinHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "One settings, menu or detail row: icon, title and subtitle, a value, a chevron or a Toggle.",
       "archetypes": [
         "settings",
@@ -1178,6 +1192,7 @@
         "MessageBubbleProps"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The conversation of a chat screen, anchored to the bottom, following a streaming reply.",
       "archetypes": [
         "ai-chat",
@@ -1260,6 +1275,7 @@
         "noticeColor"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "An inline message inside content: a promo, a warning, a success line, an error, with one action or a dismiss. Not for empty or error screens (StateView).",
       "archetypes": [
         "cart-checkout",
@@ -1351,6 +1367,7 @@
         "pageDotSize"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "The page indicator of an onboarding pager, a hero carousel or a product gallery.",
       "archetypes": [
         "onboarding",
@@ -1480,6 +1497,7 @@
         "nextPhotoPhase"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Every remote picture in content (product, cover, hero): give it `alt`. Loads behind a skeleton; a dead URL shows `fallback`, or the `placeholderColor` well with `fallbackIcon`, at the same size, and the overlay stays.",
       "archetypes": [
         "home-feeds",
@@ -1513,8 +1531,6 @@
       ],
       "indexOmit": [
         "placeholder",
-        "placeholderColor",
-        "fallbackIcon",
         "onLoad",
         "onError"
       ],
@@ -1593,6 +1609,11 @@
           "type": "number"
         },
         {
+          "name": "minTarget",
+          "optional": true,
+          "type": "number|false"
+        },
+        {
           "name": "testID",
           "optional": true,
           "type": "string"
@@ -1602,10 +1623,12 @@
         "MIN_TARGET",
         "PressHaptic",
         "PressRole",
+        "minTargetSlop",
         "textActionSlop"
       ],
       "since": "0.1.0",
-      "use": "The one pressable under every custom control: scale, haptic, a required name.",
+      "recipeKind": "behaviour",
+      "use": "The one pressable under every custom control: scale, haptic, a required name; it reaches a 44 pt target by itself (hit slop grown on each short axis, layout unchanged). An explicit `hitSlop` wins; `minTarget={false}` for dense controls whose neighbours are closer than the slop would reach.",
       "archetypes": [
         "*"
       ],
@@ -1674,6 +1697,7 @@
         "formatPrice"
       ],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A product in a grid or rail: image well, name, price with the old price struck, a heart.",
       "archetypes": [
         "home-feeds",
@@ -1759,6 +1783,7 @@
         "progressBarHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "Goal completion, a course or a step count, an upload: a track with a run, label and value above.",
       "archetypes": [
         "dashboards",
@@ -1861,6 +1886,7 @@
         "ratingStar"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "Stars with a value and count on a product, a place, a review; an input when the user rates.",
       "archetypes": [
         "content-detail",
@@ -1932,6 +1958,7 @@
         "stagger"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "An entrance for lists and cards: fade and rise once, staggered by index.",
       "archetypes": [
         "*"
@@ -1989,6 +2016,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "The viewfinder of a scan screen: corners and a scan line over the camera or a photo.",
       "archetypes": [
         "ai-scan",
@@ -2075,6 +2103,7 @@
         "backIcon"
       ],
       "since": "0.2.0",
+      "recipeKind": "visual",
       "use": "The top row of a screen the template owns: back, title, trailing actions; a large title on a root screen.",
       "archetypes": [
         "*"
@@ -2144,6 +2173,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "The dimming layer under a Sheet or over media; tap to close.",
       "archetypes": [
         "*"
@@ -2244,6 +2274,7 @@
         "searchFieldHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "The search box at the top of a list or a search screen: glyph, field, clear, optional Cancel.",
       "archetypes": [
         "search",
@@ -2328,6 +2359,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "visual",
       "use": "A list section's title row with an eyebrow and a 'See all' action.",
       "archetypes": [
         "home-feeds",
@@ -2406,6 +2438,7 @@
         "segmentedHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Two to five exclusive views on one screen: upcoming / past, all / selected, week / month.",
       "archetypes": [
         "orders-billing",
@@ -2501,6 +2534,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A bottom sheet inside the screen: filters, a size picker, the bag, options.",
       "archetypes": [
         "filter-sort",
@@ -2562,6 +2596,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The loading placeholder for any block of content.",
       "archetypes": [
         "loading",
@@ -2635,6 +2670,7 @@
         "SkeletonLeading"
       ],
       "since": "0.3.0",
+      "recipeKind": "behaviour",
       "use": "A list or feed while it loads: rows of an avatar or thumbnail and text bars, sized like the rows to come, one 'Loading' element for a screen reader.",
       "archetypes": [
         "loading",
@@ -2732,6 +2768,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A short message with one action over the bottom of the screen ('Removed · Undo').",
       "archetypes": [
         "cart-checkout",
@@ -2847,6 +2884,7 @@
         "trendOf"
       ],
       "since": "0.3.0",
+      "recipeKind": "visual",
       "use": "One number that matters: a label, the value in tabular figures with a unit, a change chip coloured by trend, a caption; tiles side by side in a row.",
       "archetypes": [
         "dashboards",
@@ -2967,6 +3005,7 @@
         "StateVariant"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "Empty, error and offline states of a screen or a list section.",
       "archetypes": [
         "error-empty",
@@ -3074,6 +3113,7 @@
         "stepperButton"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "A quantity in a cart row, a product page, a booking (guests, nights).",
       "archetypes": [
         "cart-checkout",
@@ -3162,6 +3202,7 @@
       ],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A model's reply as it arrives: a caret, minimal Markdown, one screen-reader announcement.",
       "archetypes": [
         "ai-chat",
@@ -3271,7 +3312,8 @@
         "tabBarRowHeight"
       ],
       "since": "0.4.0",
-      "use": "The tabs at the foot of an app: two to five destinations, one current, as an inset floating capsule (iOS 26) or a full-width bar (Material 3, classic iOS); a round action beside it or raised between the tabs. The one tab bar a template draws until the host has tab chrome.",
+      "recipeKind": "visual",
+      "use": "The tabs at the foot of an app: two to five destinations, one current, as an inset floating capsule (iOS 26) or a full-width bar (Material 3, classic iOS); a round action beside it or raised between the tabs. The one tab bar a template draws until the host has tab chrome. Over the content it reports its height to the nearest DockInsetProvider: wrap the screen (or the tab shell) in DockInsetProvider and give the scroll content paddingBottom: useDockInset() instead of tabBarClearance().",
       "archetypes": [
         "*"
       ],
@@ -3324,13 +3366,15 @@
         "onReselect",
         "haptic",
         "overlay",
-        "bottom"
+        "bottom",
+        "accessibilityLabel"
       ],
       "deps": [
         "Icon",
         "IconButton",
         "Press",
         "bridge",
+        "useDockInset",
         "useReducedMotion"
       ]
     },
@@ -3438,6 +3482,7 @@
         "textFieldHeight"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Every form field: sign in, sign up, address, payment, profile; the kind picks the keyboard.",
       "archetypes": [
         "authentication",
@@ -3526,6 +3571,7 @@
         "ToggleSize"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "An on/off switch in a settings row or a filter.",
       "archetypes": [
         "settings",
@@ -3580,6 +3626,7 @@
         "initialAiTaskState"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The pure chat and task state machines behind useAiChat and useAiTask.",
       "archetypes": [
         "ai-chat",
@@ -3610,6 +3657,7 @@
         "stripMarkdown"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "The minimal Markdown reader behind StreamingText.",
       "archetypes": [
         "ai-chat"
@@ -3632,6 +3680,7 @@
         "UseAiChatOptions"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A conversation over the host's ai.chat with streaming, stop, retry.",
       "archetypes": [
         "ai-chat"
@@ -3659,6 +3708,7 @@
         "AiTask"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "One AI call at a time with progress and cancel: describe a photo, generate images, transcribe.",
       "archetypes": [
         "ai-scan",
@@ -3689,6 +3739,7 @@
         "CountUpOptions"
       ],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "A headline figure that counts up to its value.",
       "archetypes": [
         "dashboards",
@@ -3723,6 +3774,7 @@
         "countdownParts"
       ],
       "since": "0.2.0",
+      "recipeKind": "behaviour",
       "use": "Time left until a moment: a sale's end, a booking hold, an OTP resend.",
       "archetypes": [
         "promotions",
@@ -3742,6 +3794,43 @@
       "deps": []
     },
     {
+      "name": "useDockInset",
+      "kind": "hook",
+      "path": "components/useDockInset.ts",
+      "from": "../components/useDockInset",
+      "summary": "The bottom padding a scroll view's content needs so nothing rests under a floating dock: wrap the screen in DockInsetProvider, give the scroll content paddingBottom: useDockInset().",
+      "props": [],
+      "exports": [
+        "DOCK_GAP",
+        "DockInsetContext",
+        "DockInsetProvider",
+        "DockInsetProviderProps",
+        "DockMetrics",
+        "DockReport",
+        "DockStore",
+        "dockInset",
+        "dockStore",
+        "useReportDock"
+      ],
+      "since": "0.1.0",
+      "recipeKind": "behaviour",
+      "use": "The bottom padding scroll content needs so nothing rests under a floating dock: wrap the screen in DockInsetProvider, give the scroll content paddingBottom: useDockInset(). The kit's overlay TabBar and an absolutely placed BottomBar report themselves; a template's own dock (TabDock, PillDock) puts onLayout={useReportDock({ bottom })} on its outer view. dockInset() is the pure sum: height + bottom offset + safe area not already counted + a 16 pt gap; two docks take the larger, 0 with none.",
+      "archetypes": [
+        "*"
+      ],
+      "aliases": [
+        "useDockInset",
+        "useTabBarInset",
+        "useDockHeight",
+        "useBottomInset",
+        "DockSpacer"
+      ],
+      "evidence": {
+        "note": "p0.overlap (content under a floating dock at rest) was the most frequent blocking failure of the template factory's batches 23, 25 and 26: builders padded scroll content by hand (dock height + 16 pt) and many forgot"
+      },
+      "deps": []
+    },
+    {
       "name": "useReducedMotion",
       "kind": "hook",
       "path": "components/useReducedMotion.ts",
@@ -3750,6 +3839,7 @@
       "props": [],
       "exports": [],
       "since": "0.1.0",
+      "recipeKind": "behaviour",
       "use": "Whether the OS asks for less motion; every animated recipe reads it.",
       "archetypes": [
         "*"

@@ -26,6 +26,8 @@ export interface Metrics {
   hallucinatedProps: number;
   tokenViolations: number;
   shadowFindings: number;
+  /** Hand-drawn copies of visual recipes: reported, never failed. */
+  shadowWarnings: number;
   coverage: number;
   stateCoverage: number;
 }
@@ -46,9 +48,13 @@ export interface GradeTarget {
   /** Component and file name: the screen is checked as `screens/<screenName>.tsx`. */
   screenName: string;
   expect: Expect;
+  /** Template mode: the template's `files/` folder, which relative imports must land in. */
+  root?: string;
+  /** The screen's path inside `files/` (or `root`); `screens/<screenName>.tsx` by default. */
+  file?: string;
 }
 
-export function gradeOutput(output: string, target: GradeTarget, typechecker: Typechecker, catalog: Catalog = loadCatalog()): Grades {
+export function gradeOutput(output: string, target: GradeTarget, typechecker: Pick<Typechecker, 'check'>, catalog: Catalog = loadCatalog()): Grades {
   const extracted = extract(output);
   const { code, ...extractGrade } = extracted;
   if (code === null) {
@@ -70,29 +76,53 @@ export function gradeOutput(output: string, target: GradeTarget, typechecker: Ty
         hallucinatedProps: 0,
         tokenViolations: 0,
         shadowFindings: 0,
+        shadowWarnings: 0,
         coverage: 0,
         stateCoverage: 0,
       },
     };
   }
 
+  const graded = gradeScreen(code, target, typechecker, catalog);
+  return {
+    extract: extractGrade,
+    ...graded,
+    pass1:
+      extractGrade.pass &&
+      graded.dialect.pass &&
+      graded.typecheck.pass &&
+      graded.props.details.hallucinated.length === 0 &&
+      graded.tokens.details.violations.length === 0,
+  };
+}
+
+/** Every grader but extract, on screen source (a `.tsx` file, not a model reply). */
+export interface ScreenGrades {
+  dialect: GradeResult<DialectDetails>;
+  typecheck: GradeResult<TypecheckDetails>;
+  props: GradeResult<PropsDetails>;
+  tokens: GradeResult<TokensDetails>;
+  shadowPrimitive: GradeResult<ShadowDetails>;
+  coverage: GradeResult<CoverageDetails>;
+  metrics: Metrics;
+}
+
+export function gradeScreen(code: string, target: GradeTarget, typechecker: Pick<Typechecker, 'check'>, catalog: Catalog = loadCatalog()): ScreenGrades {
   const screen = parseScreen(code);
-  const dialect = gradeDialect(screen, catalog, `${SCREEN_DIR}/${target.screenName}.tsx`);
-  const typecheck = typechecker.check(code, target.screenName);
+  const file = target.file ?? `${SCREEN_DIR}/${target.screenName}.tsx`;
+  const dialect = gradeDialect(screen, catalog, file, target.root);
+  const typecheck = typechecker.check(code, target.screenName, file);
   const props = gradeProps(screen, catalog);
   const tokens = gradeTokens(screen);
   const shadowPrimitive = gradeShadowPrimitive(screen);
   const coverage = gradeCoverage(screen, catalog, target.expect);
-
   return {
-    extract: extractGrade,
     dialect,
     typecheck,
     props,
     tokens,
     shadowPrimitive,
     coverage,
-    pass1: extractGrade.pass && dialect.pass && typecheck.pass && props.details.hallucinated.length === 0 && tokens.details.violations.length === 0,
     metrics: {
       hasCode: true,
       typecheckErrors: typecheck.details.errors.length + typecheck.details.suppressions.length,
@@ -101,6 +131,7 @@ export function gradeOutput(output: string, target: GradeTarget, typechecker: Ty
       hallucinatedProps: props.details.hallucinated.length,
       tokenViolations: tokens.details.violations.length,
       shadowFindings: shadowPrimitive.details.findings.length,
+      shadowWarnings: shadowPrimitive.details.warnings.length,
       coverage: coverage.details.share,
       stateCoverage: coverage.details.states.share,
     },

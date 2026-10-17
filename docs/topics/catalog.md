@@ -212,7 +212,7 @@ restyles them; with the kit's tokens they draw exactly as before.
 | component | props |
 |---|---|
 | `Icon` | `name`(IconName) `size?`(24) `color?` `strokeWidth?`(2) `filled?` `accessibilityLabel?` — generated from the icon table (`ICONS`); a labelled icon is wrapped in a View that carries the accessibility props, a bare one is decorative |
-| `Press` | `onPress` `onLongPress?` `accessibilityLabel` `accessibilityRole?` `haptic?`('none'\|'light'\|'selection'\|'medium') `activeScale?` `hitSlop?` `disabled?` — defaults and spring from `interaction.press` (kit: 'none', 0.96, 0) |
+| `Press` | `onPress` `onLongPress?` `accessibilityLabel` `accessibilityRole?` `haptic?`('none'\|'light'\|'selection'\|'medium') `activeScale?` `hitSlop?` `minTarget?`(number\|false, 44) `disabled?` — defaults and spring from `interaction.press` (kit: 'none', 0.96, 0); measures its box and grows the slop on each axis short of `minTarget` (`minTargetSlop(width, height, base, min)`), layout unchanged; an explicit `hitSlop` wins, `minTarget={false}` keeps the brand's slop for dense controls whose neighbours sit closer |
 | `Reveal` | `index?` `delay?` `offset?` — entrance; offset, duration and `stagger(index)` (capped at 7 steps) from `interaction.reveal` |
 | `Skeleton` | `width?` `height?` `radius?`(`shape.well`) `circle?` — `interaction.skeleton`: an `opacity` pulse, or `color` between two palette roles |
 | `Scrim` | `progress`(Animated) `active` `onPress?` `accessibilityLabel?` |
@@ -234,7 +234,7 @@ restyles them; with the kit's tokens they draw exactly as before.
 | `SegmentedControl` | `segments` `selectedIndex` `onChange` `variant?`('track'\|'line') `size?`('sm'\|'md'; 36 / 44 px in `segmentedHeight`, each segment's target padded to 44) `disabled?` `accessibilityLabel?` — tabs for screen readers; the thumb springs (Reduce Motion snaps) |
 | `Notice` | `message` `title?` `tone?`('info'\|'success'\|'warning'\|'error') `icon?` `actionLabel?` `onAction?` `onDismiss?` — the tone colour under `card` at 12 % with a 3 px leading rule (`noticeColor(tone, palette)`); an alert for screen readers; `shape.cardInner` |
 | `Stepper` | `value` `onChange` `accessibilityLabel` `min?`(0) `max?`(99) `step?`(1) `size?`('sm'\|'md'; px in `stepperButton`) `variant?`('outline'\|'tonal') `format?` — one adjustable element with increment / decrement actions; buttons stop at the bounds |
-| `BottomBar` | `primaryLabel` `onPrimary` `primaryVariant?` `primaryDisabled?` `primaryLoading?` `secondaryLabel?` `onSecondary?` `secondaryVariant?` `arrange?`('row'\|'stacked') `leading?` `summaryLabel?` `summaryValue?` `children?` `floating?` `bottom?` — in the screen's column after the scroll view; `floating` lifts it on a card with `elevation[3]` |
+| `BottomBar` | `primaryLabel` `onPrimary` `primaryVariant?` `primaryDisabled?` `primaryLoading?` `secondaryLabel?` `onSecondary?` `secondaryVariant?` `arrange?`('row'\|'stacked') `leading?` `summaryLabel?` `summaryValue?` `children?` `floating?` `bottom?` — in the screen's column after the scroll view; `floating` lifts it on a card with `elevation[3]`; placed over the content (`style` with `position: 'absolute'`) it reports its height to the nearest `DockInsetProvider` |
 | `Avatar` | `name` `uri?` `size?`('xs'\|'sm'\|'md'\|'lg'\|'xl'; px in `avatarSize`) `rounded?` `status?`('online'\|'away'\|'offline') `tone?` `badge?` — initials (`initialsOf`) on a tone picked from the name (`toneOf`), the photo over them (the initials show while it loads and when it fails); `shape.avatar` or `shape.cardInner` |
 | `ProgressBar` | `progress`(0–1) `tone?` `height?`(`progressBarHeight`) `label?` `valueLabel?` `indeterminate?` — a `muted` pill track; the run eases with `duration.normal` and `easing.standard`; screen readers get the percentage |
 | `PageDots` | `count` `index` `size?`('sm'\|'md'; px in `pageDotSize`) `onPhoto?` — the current dot stretches to a pill; `onPhoto` uses the scheme's lightest neutral; "Page 2 of 5" |
@@ -242,10 +242,48 @@ restyles them; with the kit's tokens they draw exactly as before.
 | `Photo` | `uri` `alt?` `aspectRatio?` `width?` `height?` `radius?`(`shape.card`) `fit?`('cover'\|'contain') `placeholder?`('skeleton'\|'muted'\|'none') `placeholderColor?`('muted', or card, background, secondary, tertiary, accent, primary, inverse) `fallback?` `fallbackIcon?`(IconName\|'none'; 'image') `onLoad?` `onError?` `children?` — a `Skeleton` until the image loads; on the first error, `fallback` or the `placeholderColor` well with `fallbackIcon` in its ink, same size, `alt` and children kept, no retry until `uri` changes; `alt: ''` is decorative |
 | `Divider` | `inset?`(px or `true` for the gutter) `strong?` `vertical?` `margin?` — a hairline in `border-soft` (`border` when strong) that screen readers skip |
 | `SkeletonRows` | `count?`(4) `leading?`('circle'\|'square'\|'none') `lines?`(1–3, 2) `trailing?` `dividers?` `size?`(44) `accessibilityLabel?`('Loading') — a list while it loads: each bar a `Skeleton`, the second shorter; one busy "Loading" element for screen readers (Instagram, Quizlet, Wise on Mobbin; 17 templates drew it by hand) |
-| `TabBar` | `items`(2–5 `{ key, label, icon?, badge? }`) `activeKey`(null outside the tabs) `onSelect` `onReselect?` `shape?`('floating'\|'bar') `labels?`('always'\|'active'\|'none') `indicator?`('lens'\|'solid'\|'tint') `tone?`('default'\|'inverse'\|'glass') `action?`(`placement` 'end'\|'center') `overlay?` `bottom?` — the tabs at the foot of an app: a tablist of tabs, the current one selected, its kit glyph filled, badge counts in the names; `tabBarClearance()` pads content under an overlay bar (TIDE, GitHub, Craft, Strava, Docusign on Mobbin; 53 templates drew one by hand) |
+| `TabBar` | `items`(2–5 `{ key, label, icon?, badge? }`) `activeKey`(null outside the tabs) `onSelect` `onReselect?` `shape?`('floating'\|'bar') `labels?`('always'\|'active'\|'none') `indicator?`('lens'\|'solid'\|'tint') `tone?`('default'\|'inverse'\|'glass') `action?`(`placement` 'end'\|'center') `overlay?` `bottom?` — the tabs at the foot of an app: a tablist of tabs, the current one selected, its kit glyph filled, badge counts in the names; over the content it reports its height to the nearest `DockInsetProvider` (`useDockInset`; `tabBarClearance()` is the static estimate) (TIDE, GitHub, Craft, Strava, Docusign on Mobbin; 53 templates drew one by hand) |
 | `StatTile` | `label` `value` `unit?` `delta?` `trend?`('up'\|'down'\|'neutral'; from the sign of `delta`) `caption?` `variant?`('card'\|'plain') `size?`('md'\|'lg') `valueRole?`(a brand's `numeric` face) `valueColor?` `align?` `onPress?` — one number: tabular figures in the headline (or display) role, a change chip filled in `success`/`destructive`/`muted` with its ink, one spoken element (Substack, Fitbit, Tonal on Mobbin; a local `Stat` in 8 templates) |
 | `useReducedMotion` | `useReducedMotion()` → boolean; the OS reduce-motion setting, read once and followed; every animated recipe asks it first |
 | `useCountdown` | `useCountdown(target, { interval?, enabled? })` → `{ total, days, hours, minutes, seconds, dd, hh, mm, ss, done }`; `countdownParts(ms)` is the pure breakdown |
+| `useDockInset` | `useDockInset()` → number, the bottom padding scroll content needs so nothing rests under a dock: the largest reported dock's height + its lift + a 16 pt gap (`DOCK_GAP`), 0 with none or outside a provider; `DockInsetProvider` (same file) wraps the screen; `useReportDock({ bottom?, safeBottom?, active? })` → the `onLayout` for a template's own dock; `dockInset({ height, bottomOffset?, safeBottom?, gap? })` is the pure sum |
+
+### Content under a dock
+
+A dock over the content (the overlay `TabBar`, a `BottomBar` placed
+absolutely, a template's own `TabDock`) covers the last rows at rest unless
+the scroll content pads by its height. The docks report it; the screen opts
+in. Without a provider every dock draws and behaves as before.
+
+```tsx
+import useDockInset, { DockInsetProvider, useReportDock } from '../components/useDockInset';
+
+export default function HomeScreen() {
+  return (
+    <DockInsetProvider>
+      <Feed />
+      <TabBar items={TABS} activeKey="home" onSelect={go} />
+    </DockInsetProvider>
+  );
+}
+
+function Feed() {
+  const inset = useDockInset(); // the TabBar's height + its bottom + 16
+  return <ScrollView contentContainerStyle={{ paddingBottom: inset }}>{/* … */}</ScrollView>;
+}
+
+// A template's own dock reports the same way: its height plus its `bottom`.
+function TabDock() {
+  const onLayout = useReportDock({ bottom: space[4] });
+  return <View onLayout={onLayout} style={{ position: 'absolute', left: 16, right: 16, bottom: space[4] }}>{/* … */}</View>;
+}
+```
+
+The hook reads the provider above it, so call it in a child of
+`DockInsetProvider` (or put the provider in the tab shell around the
+screens). The home indicator is counted once: the kit's docks carry it in
+`bottom`; a template dock passes `safeBottom` only for space under it that
+neither its height nor its `bottom` includes.
 
 `ProductCard` ships as `components/commerce/ProductCard.tsx`; a component in
 a sub-folder is named by its file (`--only ProductCard`).
@@ -258,6 +296,22 @@ apps on Mobbin (`mobbin`, one link per screen it follows). The
 aliases, so a template that writes its own `SearchPill` or `QtyStepper` is
 pointed at the recipe.
 
+Each recipe also has a `recipeKind`. `behaviour` recipes own an interaction
+or system contract that a hand-made copy tends to break: the press target and
+its feedback (`Press`), text input, switch / adjustable / tablist semantics
+(`Toggle`, `Stepper`, `SegmentedControl`), modal dismissal (`Sheet`), live
+announcements (`Snackbar`, `StreamingText`), loading / empty / error states
+(`StateView`, `Skeleton`, `SkeletonRows`), reduced motion (`Reveal`), remote
+image loading with alt and fallback (`Photo`), the chat list's reading order
+and anchoring (`MessageList`), and the AI and timing hooks. `visual` recipes
+are presentation (`Button`, `Chip`, `ScreenHeader`, `TabBar`, the commerce
+pack…): a template's look is its identity, and forcing one drawing on every
+template makes them look alike (App Store 4.3). So the graders treat the two
+apart: `coverage` passes when every expected behaviour recipe is rendered
+(its `score` is still the share of all expected ones), and `shadow-primitive`
+fails a local copy of a behaviour recipe but only lists a copy of a visual
+one under `warnings`.
+
 ## The registry (`registry.json`)
 
 `fluxnative-catalog registry` writes `packages/catalog/registry.json`, the
@@ -265,14 +319,27 @@ machine-readable catalogue behind `CATALOG.index.md`: every component with
 its `kind` (component, hook, module), `path`, `from` (the import a screen
 writes), `summary`, `props` (name, optional, type, read from
 `export interface <Name>Props`), named `exports`, transitive `deps`, and the
-metadata of `registry.meta.json`: `since`, `use`, `archetypes` (OpenDesign's
-30 plus the five AI ones; `*` means any screen), `aliases`, `evidence` and
-`mobbin`. It also carries the dialect (allowed imports, forbidden constructs)
+metadata of `registry.meta.json`: `since` (the `@fluxnative/catalog` npm
+version the entry first ships in, the version a fork records; values above
+0.1.0 on older entries are the pre-release kit line), `use`, `archetypes` (OpenDesign's
+30 plus the five AI ones; `*` means any screen), `aliases`, `recipeKind`
+(`behaviour` or `visual`, above), `evidence` and `mobbin`. It also carries the dialect (allowed imports, forbidden constructs)
 and the token keys. `pnpm tokens` regenerates it and `pnpm tokens:check`
-fails on drift; a component without a `registry.meta.json` entry fails the
-build, so every recipe ships with its evidence. The MCP server
+fails on drift; a component without a `registry.meta.json` entry, or with no
+valid `recipeKind`, fails the build, so every recipe ships with its evidence. The MCP server
 ([`packages/mcp`](../../packages/mcp/README.md)) and tools outside this
 repo read it instead of parsing sources.
+
+Beside it, the same step writes `registry.archetypes.json`: for each screen
+archetype on `ARCHETYPES` (exported from `@fluxnative/catalog`, the 35 the
+template catalog uses), `{ recipes, general, behaviour }`, where `recipes` are the
+components whose `archetypes` name it, most evidence first (`evidence.templates`,
+then `evidence.categories`, then name), `general` the `*` ones not already
+listed, and `behaviour` the names from both whose `recipeKind` is `behaviour`:
+the ones every screen of that archetype is expected to use, never copy (the
+factory's speccer requires them). `mapVersion` is 2 since `behaviour`. An archetype in `registry.meta.json` that is not on the list fails the
+build. A speccer that has assigned a screen its archetype reads one entry, or
+calls the MCP tool `get_archetype`, instead of scoring every recipe.
 
 The bridge to the host (`components/bridge.ts`) is optional-chained
 everywhere: `bridge()?.ui?.haptic?.('light')`, `bridge()?.ui?.toast?.(…)`,

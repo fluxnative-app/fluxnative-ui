@@ -36,7 +36,7 @@ Prefer retrieval-led reasoning over pre-training-led reasoning: FluxNative UI is
 6. Icons: `<Icon name="bag" size={22} color={palette.foreground} />` with a name from `ICON_NAMES`; `filled` for the selected state. Tabs take `iconName` and need nothing else.
 7. `FluxTabs minimize` and `Tab role="search"` are iOS 26+ only; Android and web ignore them. `TabBar` is a Material 3 bar on Android (`shape="bar"`) and a floating pill elsewhere.
 4. Use `onPress`, not `onClick`. Use `View`, `Text` and `Pressable`, not `div` and `span`.
-5. Pad content above a custom tab bar with `useTabBarInset()`.
+5. Pad content above a custom tab bar with `useTabBarInset()`. In a Flux template (catalog layer): wrap the screen in `DockInsetProvider` and pad scroll content by `useDockInset()` (`../components/useDockInset`); the overlay `TabBar` reports itself, a template dock uses `onLayout={useReportDock({ bottom })}`.
 
 ### Components
 |component|props|
@@ -82,7 +82,11 @@ export default function Home() {
 |Expo Router setup|`docs/topics/expo-router.md`|
 |Flux WebView, runtime styling|`docs/topics/runtime.md`|
 |Android chrome, iOS-only props|`docs/topics/android.md`|
-|Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`. Remote pictures: `Photo` with `alt`; a dead URL shows `fallback` or a `placeholderColor` well with `fallbackIcon` (`onLoad?` `onError?`); `Avatar` falls back to initials|`docs/topics/catalog.md`|
+|Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`. `Press` reaches a 44 pt target by itself (`minTarget`, default 44; `minTarget={false}` for dense controls; an explicit `hitSlop` wins). Remote pictures: `Photo` with `alt`; a dead URL shows `fallback` or a `placeholderColor` well with `fallbackIcon` (`onLoad?` `onError?`); `Avatar` falls back to initials|`docs/topics/catalog.md`|
+|Flux templates: recipes per screen archetype, `registry.archetypes.json` and MCP `get_archetype`; `behaviour` lists the ones every screen of it must use|`docs/topics/catalog.md`|
 |AI pack for Flux templates: `flux.ai` host contract, useAiChat/useAiTask, StreamingText, Composer, MessageList, ScanFrame|`docs/topics/ai.md`|
 |API stability: what changes in a minor vs a major, deprecation windows|`docs/topics/versioning.md`|
+|Recipe `recipeKind` in `registry.json`: `behaviour` (Press, TextField, Sheet, StateView, Photo, AI hooks…) a screen must use, never copy — `validate_screen` and coverage fail it; `visual` (Button, Chip, ScreenHeader…) may be redrawn, only a warning|`docs/topics/catalog.md`|
 |Design rules: beyond the kit's defaults, store-review readiness|`docs/llm/CRAFT.index.md`|
+|Grade screens without MCP: `fluxnative-ui-grade [--root <files/>] [--expect <file.json>] [--json] <screen.tsx | dir>...` runs every grader, typecheck included; `--root` grades a Flux template's screens in place; exit 0 pass, 2 fail, 1 error|`packages/mcp/README.md`|
+|Agent lanes: run the MCP server and the grader from a kit worktree pinned by commit; `--doctor` (Node, installed deps, MCP `initialize`) before work, `--version --json` → `{version, commit}` to prove the pin, `.mcp.json` entry|`packages/mcp/README.md` "Run it in an agent lane"|

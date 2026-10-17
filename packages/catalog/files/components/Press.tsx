@@ -4,8 +4,12 @@
 // profile, `interaction.press` in theme/tokens; props still override them.
 // Layout styles (flex, position, margins) go on the Pressable so the
 // control sits in its parent's layout; the rest paints the animated box.
+// It reaches the 44 pt touch target by itself: it measures its box and
+// grows the hit slop on each axis that is short of MIN_TARGET, without
+// moving a pixel. An explicit `hitSlop` still wins; `minTarget={false}`
+// turns the growth off for dense controls whose neighbours sit closer.
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -13,6 +17,8 @@ import {
   type AccessibilityRole,
   type AccessibilityState,
   type GestureResponderEvent,
+  type Insets,
+  type LayoutChangeEvent,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
@@ -38,8 +44,10 @@ export interface PressProps {
   haptic?: PressHaptic;
   /** Scale while pressed; 1 turns it off. Default `interaction.press.activeScale` (0.96 in the kit). */
   activeScale?: number;
-  /** Extra hit area in px on every side. Default `interaction.press.hitSlop` (0 in the kit). */
+  /** Extra hit area in px on every side. When set it wins over `minTarget`. Default: the brand's `interaction.press.hitSlop` (0 in the kit), grown to reach `minTarget`. */
   hitSlop?: number;
+  /** The touch target the control reaches by itself, in pt: the hit slop grows on each short axis. Default `MIN_TARGET` (44); `false` keeps the brand's slop only, for dense controls whose neighbours are closer than the slop would reach. */
+  minTarget?: number | false;
   testID?: string;
 }
 
@@ -90,6 +98,13 @@ export function textActionSlop(height: number): number {
   return Math.max(interaction.press.hitSlop, Math.ceil((MIN_TARGET - height) / 2));
 }
 
+/** The hit slop that grows a `width` × `height` box to a `min` × `min` target, per axis, never under `base`; `min` false gives `base` on every side. */
+export function minTargetSlop(width: number, height: number, base: number, min: number | false = MIN_TARGET): Required<Insets> {
+  const across = min === false ? base : Math.max(base, Math.ceil((min - width) / 2));
+  const along = min === false ? base : Math.max(base, Math.ceil((min - height) / 2));
+  return { top: along, bottom: along, left: across, right: across };
+}
+
 export default function Press({
   onPress,
   onLongPress,
@@ -102,12 +117,26 @@ export default function Press({
   disabled = false,
   haptic = interaction.press.haptic,
   activeScale = interaction.press.activeScale,
-  hitSlop = interaction.press.hitSlop,
+  hitSlop,
+  minTarget = MIN_TARGET,
   testID,
 }: PressProps) {
   const scale = useRef(new Animated.Value(1)).current;
   const reduced = useReducedMotion();
   const { outer, inner } = splitStyle(style);
+  const base = interaction.press.hitSlop;
+  // The box as last laid out; before the first layout event the slop is the brand's, as before.
+  const [box, setBox] = useState<{ width: number; height: number } | null>(null);
+  const measures = hitSlop === undefined && minTarget !== false;
+  const measure = measures
+    ? {
+        onLayout: (event: LayoutChangeEvent) => {
+          const { width, height } = event.nativeEvent.layout;
+          setBox((current) => (current !== null && current.width === width && current.height === height ? current : { width, height }));
+        },
+      }
+    : null;
+  const slop = hitSlop ?? (measures && box !== null ? minTargetSlop(box.width, box.height, base, minTarget) : base);
 
   const to = (value: number) => {
     if (reduced || activeScale === 1) return;
@@ -125,7 +154,8 @@ export default function Press({
       onPressIn={() => to(activeScale)}
       onPressOut={() => to(1)}
       disabled={disabled}
-      hitSlop={hitSlop}
+      hitSlop={slop}
+      {...measure}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}

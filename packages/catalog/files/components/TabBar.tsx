@@ -11,7 +11,8 @@
 // raised between the tabs (Docusign). Until the host draws tab chrome
 // (`flux/navigation` has only a stack), this is the one tab bar a template
 // draws (CRAFT rule 11). Screen readers get a tablist of tabs, the current
-// one selected, with badge counts in the names.
+// one selected, with badge counts in the names. Over the content, it reports
+// its height to the nearest `DockInsetProvider` (`useDockInset`).
 
 import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
@@ -20,6 +21,7 @@ import { usePalette, type Palette } from '../theme/usePalette';
 import Icon, { type IconName } from './Icon';
 import { badgeMark, withCount } from './IconButton';
 import Press, { type PressHaptic } from './Press';
+import { useReportDock } from './useDockInset';
 
 export type TabBarShape = 'floating' | 'bar';
 export type TabBarLabels = 'always' | 'active' | 'none';
@@ -173,6 +175,11 @@ export default function TabBar({
   const half = Math.ceil(items.length / 2);
   // An icon-only capsule hugs its tabs, one row-wide slot each, and centres (Shop, IMDb).
   const hug = !bar && labels === 'none';
+  // Over the content, it tells the nearest DockInsetProvider how much it covers: its box, its lift (the
+  // capsule's `bottom`; the bar holds it as padding), and the raised disc standing RISE + RING above the box.
+  const placed = StyleSheet.flatten(style) ?? {};
+  const lift = typeof placed.bottom === 'number' ? placed.bottom : floats && !bar ? bottom : 0;
+  const onLayout = useReportDock({ bottom: lift + (center ? RISE + RING : 0), active: floats || placed.position === 'absolute' });
 
   const tab = (item: TabBarItem) => {
     const selected = item.key === activeKey;
@@ -277,6 +284,7 @@ export default function TabBar({
   return (
     <View
       pointerEvents="box-none"
+      onLayout={onLayout}
       style={[
         floats ? styles.overlay : null,
         floats && !bar ? { left: layout.gutter, right: layout.gutter, bottom } : null,

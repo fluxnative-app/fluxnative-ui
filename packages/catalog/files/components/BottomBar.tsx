@@ -4,12 +4,15 @@
 // in the screen's column, after the scroll view, on `background` under a
 // hairline; `floating` lifts it onto a `card` with `elevation[3]` and side
 // margins. The bottom padding clears the home indicator (`layout.gutter`).
+// Placed over the content (`style` with `position: 'absolute'`), it reports
+// its height to the nearest `DockInsetProvider` (`useDockInset`).
 
 import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { elevation, layout, shape, space, type } from '../theme/tokens';
 import { usePalette } from '../theme/usePalette';
 import Button, { type ButtonVariant } from './Button';
+import { useReportDock } from './useDockInset';
 
 export type BottomBarArrange = 'row' | 'stacked';
 
@@ -62,6 +65,13 @@ export default function BottomBar({
   style,
 }: BottomBarProps) {
   const palette = usePalette();
+  // In the screen's column it takes its own space; over the content it reports its box plus its lift
+  // (`style.bottom`, and a floating card's margin, which onLayout leaves out).
+  const placed = StyleSheet.flatten(style) ?? {};
+  const onLayout = useReportDock({
+    bottom: (typeof placed.bottom === 'number' ? placed.bottom : 0) + (floating ? bottom : 0),
+    active: placed.position === 'absolute',
+  });
   const secondary =
     secondaryLabel !== undefined && onSecondary !== undefined ? (
       <Button label={secondaryLabel} onPress={onSecondary} variant={secondaryVariant} style={arrange === 'row' ? styles.grow : null} />
@@ -78,6 +88,7 @@ export default function BottomBar({
   );
   return (
     <View
+      onLayout={onLayout}
       style={[
         styles.bar,
         { paddingBottom: bottom },
