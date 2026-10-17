@@ -274,6 +274,15 @@ build, so every recipe ships with its evidence. The MCP server
 ([`packages/mcp`](../../packages/mcp/README.md)) and tools outside this
 repo read it instead of parsing sources.
 
+Beside it, the same step writes `registry.archetypes.json`: for each screen
+archetype on `ARCHETYPES` (exported from `@fluxnative/catalog`, the 35 the
+template catalog uses), `{ recipes, general }`, where `recipes` are the
+components whose `archetypes` name it, most evidence first (`evidence.templates`,
+then `evidence.categories`, then name), and `general` the `*` ones not already
+listed. An archetype in `registry.meta.json` that is not on the list fails the
+build. A speccer that has assigned a screen its archetype reads one entry, or
+calls the MCP tool `get_archetype`, instead of scoring every recipe.
+
 The bridge to the host (`components/bridge.ts`) is optional-chained
 everywhere: `bridge()?.ui?.haptic?.('light')`, `bridge()?.ui?.toast?.(…)`,
 `bridge()?.storage?.get?.(key)`.

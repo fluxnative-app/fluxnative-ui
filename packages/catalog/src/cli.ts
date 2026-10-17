@@ -4,7 +4,8 @@
 // fluxnative-catalog check  --to <files dir> [--colors <json> | --brand <path>] [--only A,B] [--upstream [--strict]]
 // fluxnative-catalog build  [--check]   regenerate this package's own files/ (default colours)
 // fluxnative-catalog index  [--out <path>] [--check]   write docs/llm/CATALOG.index.md, the ≤ 9 KB index models read
-// fluxnative-catalog registry [--out <path>] [--check]   write registry.json: every component, its props, deps and evidence, for tools
+// fluxnative-catalog registry [--out <path>] [--check]   write registry.json: every component, its props, deps and evidence, for tools,
+//                                                        and registry.archetypes.json beside it: per screen archetype, the recipes that fit
 //
 // `emit` writes the layer into a Flux template's `files/` folder (theme/,
 // components/) with a `.fluxnative-ui.json` manifest; `--check` writes
@@ -21,7 +22,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { CATALOG_VERSION, FILES_DIR, GENERATED, PACKAGE_ROOT, render } from './emit.ts';
 import { CATALOG_INDEX_LIMIT, renderCatalogIndex } from './catalog-index.ts';
-import { REGISTRY_FILE, renderRegistryJson } from './registry.ts';
+import { REGISTRY_FILE, renderRegistry, renderRegistryJson } from './registry.ts';
+import { renderArchetypeMapJson } from './archetypes.ts';
 import { catalogCommit } from './git.ts';
 import { MANIFEST_FILE, loadManifest, type Manifest } from './manifest.ts';
 import { formatProblems } from '@fluxnative/tokens/brand';
@@ -173,7 +175,8 @@ if (command === 'build') {
   expectArgs(['--out'], ['--check']);
   const out = resolve(process.cwd(), flag(argv, '--out') ?? REGISTRY_FILE);
   try {
-    const drift = writeAll(dirname(out), { [relative(dirname(out), out)]: renderRegistryJson() }, check);
+    const registry = renderRegistry();
+    const drift = writeAll(dirname(out), { [relative(dirname(out), out)]: renderRegistryJson(registry), 'registry.archetypes.json': renderArchetypeMapJson(registry) }, check);
     if (drift) {
       console.error('catalog registry out of date — run `pnpm tokens` (or `pnpm catalog registry`)');
       process.exit(1);
