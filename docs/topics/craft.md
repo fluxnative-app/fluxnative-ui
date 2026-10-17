@@ -47,9 +47,12 @@ The numbered rules in `CRAFT.index.md` fall into four groups.
    the part a reviewer compares across apps.
 2. **The tells of generated UI (rules 2–8).** Kit-default blue and purple
    gradients, one sans at 500 weight everywhere, slogan copy ("Elevate your
-   journey"), emoji glyphs, Unsplash heroes, symmetrical grids of identical
-   rounded cards, shadows inside shadows, everything bouncing. Each is
-   something a model produces by default and a person does not.
+   journey"), emoji glyphs, stock-looking heroes, decoration the reference
+   does not have, symmetrical grids of identical rounded cards, shadows
+   inside shadows, everything bouncing. Each is something a model produces
+   by default and a person does not. The opposite failure counts too: a
+   photo or a signature element the reference has, flattened into a vector
+   (rules 2 and 5, changed on 17 October 2026, below).
 3. **States and platform (rules 9–11).** Designed loading, empty and error
    states in both schemes; platform-correct chrome (chevron vs arrow,
    grouped lists on iOS, Material bar on Android, 44 px targets, names on
@@ -57,8 +60,8 @@ The numbered rules in `CRAFT.index.md` fall into four groups.
 4. **Content realism (rule 4).** Data with variance; prices, dates and names
    that could be real; empty states that say what to do next.
 
-The rules are specific on purpose: a model follows "never Unsplash hotlinks"
-and ignores "be original" (the research note cites arXiv 2602.11988 and
+The rules are specific on purpose: a model follows "never picsum or
+placeholder services" and ignores "be original" (the research note cites arXiv 2602.11988 and
 Vercel's AGENTS.md evals on this).
 
 ## What a machine checks
@@ -71,7 +74,7 @@ template (one row each, JSON with `--json`, a review sheet with
 |---|---|---|
 | identity | a name no other template uses; description word overlap with another template ≥ 0.6; a `*Mark`/`Wordmark`/`Logo` component or a `brandName` prop | ERROR for a duplicate name, else WARN |
 | copy | lorem / placeholder text; three or more generic phrases ("welcome back", "seamless"…); emoji as glyphs | ERROR for placeholder text, else WARN |
-| imagery | hotlinked stock and placeholder hosts (Unsplash, picsum, placehold…) | WARN |
+| imagery | hotlinked stock and placeholder hosts (Unsplash, picsum, placehold…); under process 4.0 the factory gate accepts the Unsplash API and the pinned `fluxnative-app/image` instead (below) | WARN |
 | states | `previewState` offers live, loading, empty, error; at least three screens | WARN |
 | a11y | raw pressables with neither a label nor a spread | WARN |
 | scheme | a dark file or a scheme lock | WARN |
@@ -133,6 +136,46 @@ The panel separates generated defaults from the catalog, and it still flags most
 3. A stock photo as the hero.
 
 A pass on the first, plus specific copy in place of slogans, flipped one template's verdict in all three runs. On another the pairwise judge preferred the original. That is why a craft change goes through the judge and not through a rule. None of this is store approval, which only a submission gives; it is the measurement the craft rules were missing.
+
+## 17 October 2026: real photos, and signatures with depth (rules 2 and 5)
+
+Until v0.2.0 rule 5 said "never Unsplash, picsum or placeholder hotlinks"
+and rule 2 said "no pastel wash or glow blobs behind a screen". Both aimed
+at real tells, and both overshot. The template factory's process 4.0,
+decided by the owner on 17 October 2026, reviewed 53 factory templates
+against their references and found the opposite failure:
+
+| what the reference had | flattened in |
+|---|---:|
+| photos, products, 3D characters → flat vectors or initials | about 28 of 53 templates, the most frequent reason a template looked weak |
+| a glossy orb or a mesh background → a flat fill | about 8 of 10 templates |
+
+A builder that reads "never Unsplash" and has no other image source draws
+a vector where the reference has a photograph, and a builder that reads
+"no glow" flattens the one element that gives the reference its mood. So
+v0.3.0 keeps what the rules were for and moves the line:
+
+- **Rule 5, imagery.** A photo region of the reference stays a photo. The
+  sources are the template's own assets, the Unsplash API, or the team's
+  image repo `fluxnative-app/image` pinned by commit and served by
+  jsDelivr. The Unsplash API guidelines *require* hotlinking
+  `images.unsplash.com` and crediting the author, so the hotlink is the
+  licensed use, not the shortcut it looked like. Licence and source are
+  recorded with the template (the factory keeps them in its asset list).
+  Every raster is a `Photo` with `alt` and `fallback`, so a failed load
+  degrades to the brand's fallback rather than a broken box. Still banned:
+  picsum and placeholder services, a stock-looking hero, emoji as icons,
+  and sparkles for AI (`AiBadge mark` carries the brand's own mark).
+- **Rule 2, palette.** No decoration the reference does not have:
+  decorative washes and glow blobs remain an AI-look tell. A signature the
+  reference does have (a mesh gradient, a glossy orb, a glow) is built with
+  depth (layered stops, a highlight, a shadow) and never flattened to one
+  colour. The palette guidance is unchanged: `primary` from the brand, one
+  accent, tint don't flood, gradients only when the brand is built on them.
+
+fluxbuilder-template's `check_craft.py` still warns on an Unsplash host;
+the factory's gate is where process 4.0 checks the approved hosts and the
+credits, and the checker follows it there.
 
 ## How the kit itself stays out of the way
 
