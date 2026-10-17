@@ -29,6 +29,9 @@ export const FRAGMENT = Symbol('Fragment');
 /** Side effects, in order: animations started, values set, haptics, announcements. */
 export const log: unknown[][] = [];
 let effects: Array<() => unknown> = [];
+/** Hook state, one slot per `useState` call in render order; `rerender` reads what setters wrote. */
+let states: unknown[] = [];
+let cursor = 0;
 
 /** What the stubs report about the device. */
 export const env = { scheme: 'light' as 'light' | 'dark', os: 'ios' as 'ios' | 'android' };
@@ -44,7 +47,15 @@ const react = {
   createElement: (type: unknown, props: Props | null, ...children: unknown[]) => el(type, props ?? {}, ...children),
   Fragment: FRAGMENT,
   useRef: (current: unknown) => ({ current }),
-  useState: (initial: unknown) => [typeof initial === 'function' ? (initial as () => unknown)() : initial, () => undefined],
+  useState: (initial: unknown) => {
+    const slot = cursor;
+    cursor += 1;
+    if (slot >= states.length) states.push(typeof initial === 'function' ? (initial as () => unknown)() : initial);
+    const set = (next: unknown) => {
+      states[slot] = typeof next === 'function' ? (next as (prev: unknown) => unknown)(states[slot]) : next;
+    };
+    return [states[slot], set];
+  },
   useEffect: (effect: () => unknown) => {
     effects.push(effect);
   },
@@ -276,6 +287,8 @@ export interface Rendered {
   /** Per Pressable, what press-in, press-out and press did. */
   presses: unknown[][][];
   tree: Array<HostNode | string>;
+  /** Draws the element again with the state its setters wrote (an image's onLoad, onError…); effects are not run. */
+  rerender: () => { view: Array<View | string>; tree: Array<HostNode | string> };
 }
 
 export interface Device {
@@ -293,6 +306,14 @@ export function render(load: Loader, element: Element, device: Device = {}): Ren
   host.flux = { ui: { haptic: (kind: string) => log.push(['haptic', kind]) } };
   log.length = 0;
   effects = [];
+  states = [];
+  cursor = 0;
+  const rerender = () => {
+    cursor = 0;
+    effects = [];
+    const again = expand(element);
+    return { view: snapshot(again), tree: again };
+  };
   try {
     const tree = expand(element);
     const view = snapshot(tree);
@@ -302,7 +323,7 @@ export function render(load: Loader, element: Element, device: Device = {}): Ren
       for (const handler of ['onPressIn', 'onPressOut', 'onPress']) (node.props[handler] as ((event?: unknown) => void) | undefined)?.({});
       return log.splice(0);
     });
-    return { view, mount, presses, tree };
+    return { view, mount, presses, tree, rerender };
   } finally {
     delete host.flux;
   }
