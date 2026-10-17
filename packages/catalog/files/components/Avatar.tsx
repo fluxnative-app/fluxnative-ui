@@ -1,5 +1,6 @@
 // A person or a brand: the photo when there is one, else initials on a
-// tinted disc. Sizes 24 to 80 px; corners follow `shape.avatar` (round in
+// tinted disc. The initials sit under the photo, so they show while it
+// loads and stay when it fails (on the first error, until `uri` changes). Sizes 24 to 80 px; corners follow `shape.avatar` (round in
 // the kit) or `shape.cardInner` when `rounded`. A `status` dot sits at the
 // bottom-right corner inside a `background` ring. The screen-reader name
 // is the person's name, with the status.
@@ -67,7 +68,8 @@ export function toneOf(name: string): Exclude<AvatarTone, 'auto'> {
 
 export default function Avatar({ name, uri, size = 'md', rounded = false, status, tone = 'auto', badge, accessibilityLabel, style }: AvatarProps) {
   const palette = usePalette();
-  const [failed, setFailed] = useState(false);
+  // The uri that failed: a new one in a recycled row tries again.
+  const [failedUri, setFailedUri] = useState<string | undefined>(undefined);
   const diameter = avatarSize[size];
   const radius = rounded ? Math.min(shape.cardInner, diameter / 2) : Math.min(shape.avatar, diameter / 2);
   const [fill, ink] = FILL[tone === 'auto' ? toneOf(name) : tone];
@@ -79,8 +81,8 @@ export default function Avatar({ name, uri, size = 'md', rounded = false, status
         <Text style={{ fontSize: Math.round(diameter * INITIALS_RATIO), lineHeight: diameter, fontWeight: fontWeight.semibold, color: palette[ink] }}>
           {initialsOf(name)}
         </Text>
-        {uri !== undefined && !failed ? (
-          <Image source={{ uri }} onError={() => setFailed(true)} resizeMode="cover" style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
+        {uri !== undefined && uri !== failedUri ? (
+          <Image source={{ uri }} onError={() => setFailedUri(uri)} resizeMode="cover" style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
         ) : null}
       </View>
       {badge !== undefined ? (

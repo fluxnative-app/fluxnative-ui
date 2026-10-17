@@ -226,7 +226,7 @@
         "toneOf"
       ],
       "since": "0.2.0",
-      "use": "A person or brand in a list row, a header, a message, a card: photo, else initials on a palette tone; a presence dot when the app has presence.",
+      "use": "A person or brand in a list row, a header, a message, a card: photo, else initials on a palette tone (also while it loads and when the URL fails); a presence dot when the app has presence.",
       "archetypes": [
         "profile",
         "social",
@@ -1393,7 +1393,7 @@
       "kind": "component",
       "path": "components/Photo.tsx",
       "from": "../components/Photo",
-      "summary": "A picture that loads: a Skeleton (or a muted well) until the image arrives, the image, and a fallback when it fails.",
+      "summary": "A picture that loads: a Skeleton (or a placeholderColor well) until the image arrives, the image, and a fallback when it fails.",
       "props": [
         {
           "name": "uri",
@@ -1436,9 +1436,29 @@
           "type": "'skeleton'|'muted'|'none'"
         },
         {
+          "name": "placeholderColor",
+          "optional": true,
+          "type": "'muted'|'card'|'background'|'secondary'|'tertiary'|'accent'|'primary'|'inverse'"
+        },
+        {
           "name": "fallback",
           "optional": true,
           "type": "node"
+        },
+        {
+          "name": "fallbackIcon",
+          "optional": true,
+          "type": "PhotoFallbackIcon"
+        },
+        {
+          "name": "onLoad",
+          "optional": true,
+          "type": "fn"
+        },
+        {
+          "name": "onError",
+          "optional": true,
+          "type": "fn"
         },
         {
           "name": "children",
@@ -1452,11 +1472,15 @@
         }
       ],
       "exports": [
+        "PhotoFallbackIcon",
         "PhotoFit",
-        "PhotoPlaceholder"
+        "PhotoPhase",
+        "PhotoPlaceholder",
+        "PhotoPlaceholderColor",
+        "nextPhotoPhase"
       ],
       "since": "0.2.0",
-      "use": "Any remote picture in content: product, cover, avatar well, hero. Loads behind a skeleton, falls back on error, takes an overlay.",
+      "use": "Every remote picture in content (product, cover, hero): give it `alt`. Loads behind a skeleton; a dead URL shows `fallback`, or the `placeholderColor` well with `fallbackIcon`, at the same size, and the overlay stays.",
       "archetypes": [
         "home-feeds",
         "content-detail",
@@ -1488,7 +1512,11 @@
         }
       ],
       "indexOmit": [
-        "placeholder"
+        "placeholder",
+        "placeholderColor",
+        "fallbackIcon",
+        "onLoad",
+        "onError"
       ],
       "deps": [
         "Icon",

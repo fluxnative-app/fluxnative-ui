@@ -82,7 +82,7 @@ export default function Home() {
 |Expo Router setup|`docs/topics/expo-router.md`|
 |Flux WebView, runtime styling|`docs/topics/runtime.md`|
 |Android chrome, iOS-only props|`docs/topics/android.md`|
-|Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`|`docs/topics/catalog.md`|
+|Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`. Remote pictures: `Photo` with `alt`; a dead URL shows `fallback` or a `placeholderColor` well with `fallbackIcon` (`onLoad?` `onError?`); `Avatar` falls back to initials|`docs/topics/catalog.md`|
 |AI pack for Flux templates: `flux.ai` host contract, useAiChat/useAiTask, StreamingText, Composer, MessageList, ScanFrame|`docs/topics/ai.md`|
 |API stability: what changes in a minor vs a major, deprecation windows|`docs/topics/versioning.md`|
 |Design rules: beyond the kit's defaults, store-review readiness|`docs/llm/CRAFT.index.md`|
