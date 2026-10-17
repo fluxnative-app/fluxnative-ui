@@ -247,6 +247,7 @@ describe('props', () => {
       'ListRow',
       'MessageList',
       'Notice',
+      'Orb',
       'PageDots',
       'Photo',
       'Press',

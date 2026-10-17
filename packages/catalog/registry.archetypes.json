@@ -5,7 +5,8 @@
     "onboarding": {
       "recipes": [
         "PageDots",
-        "ProgressBar"
+        "ProgressBar",
+        "Orb"
       ],
       "general": [
         "TabBar",
@@ -1044,6 +1045,7 @@
         "AiBadge",
         "Composer",
         "MessageList",
+        "Orb",
         "StreamingText",
         "aiState",
         "markdown",
@@ -1086,6 +1088,7 @@
         "Photo",
         "ProgressBar",
         "AiBadge",
+        "Orb",
         "StreamingText",
         "aiState",
         "useAiTask"
@@ -1157,6 +1160,7 @@
     },
     "ai-voice": {
       "recipes": [
+        "Orb",
         "useAiTask"
       ],
       "general": [
@@ -1190,6 +1194,7 @@
       "recipes": [
         "Notice",
         "AiBadge",
+        "Orb",
         "StreamingText",
         "useAiTask"
       ],

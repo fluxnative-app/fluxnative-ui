@@ -85,6 +85,7 @@ export default function Home() {
 |Flux templates: emit, `update` and `check` the catalog layer (tokens, Icon, primitives); forks in `.fluxnative-ui.json`. `Press` reaches a 44 pt target by itself (`minTarget`, default 44; `minTarget={false}` for dense controls; an explicit `hitSlop` wins). Remote pictures: `Photo` with `alt`; a dead URL shows `fallback` or a `placeholderColor` well with `fallbackIcon` (`onLoad?` `onError?`); `Avatar` falls back to initials|`docs/topics/catalog.md`|
 |Flux templates: recipes per screen archetype, `registry.archetypes.json` and MCP `get_archetype`; `behaviour` lists the ones every screen of it must use|`docs/topics/catalog.md`|
 |AI pack for Flux templates: `flux.ai` host contract, useAiChat/useAiTask, StreamingText, Composer, MessageList, ScanFrame|`docs/topics/ai.md`|
+|AI mark in a Flux template: `Orb` (`glass`/`pulse`; `state`; `level` 0–1 from the voice hook, ≤ 30 Hz), still under Reduce Motion|`docs/topics/ai.md`|
 |API stability: what changes in a minor vs a major, deprecation windows|`docs/topics/versioning.md`|
 |Recipe `recipeKind` in `registry.json`: `behaviour` (Press, TextField, Sheet, StateView, Photo, AI hooks…) a screen must use, never copy — `validate_screen` and coverage fail it; `visual` (Button, Chip, ScreenHeader…) may be redrawn, only a warning|`docs/topics/catalog.md`|
 |Design rules: beyond the kit's defaults, store-review readiness|`docs/llm/CRAFT.index.md`|
