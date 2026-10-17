@@ -64,3 +64,23 @@ test('the server lists its six tools and answers get_index under 9 KB over an in
   await client.close();
   await server.close();
 });
+
+test('get_design_rules serves CRAFT.index.md: versioned, at most 4 KB, real photos allowed and placeholder services not', async () => {
+  const server = createServer();
+  const client = new Client({ name: 'test', version: '0' });
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+  const rules = await client.callTool({ name: 'get_design_rules', arguments: {} });
+  const body = (rules.content as Array<{ type: string; text: string }>)[0]?.text ?? '';
+  assert.match(body, /^<!-- fluxnative-ui:craft-index v\d+\.\d+\.\d+ /);
+  assert.ok(Buffer.byteLength(body) <= 4096, `CRAFT.index.md is ${Buffer.byteLength(body)} bytes`);
+  const imagery = body.split('\n').find((line) => line.startsWith('5. **Imagery.**')) ?? '';
+  assert.match(imagery, /Unsplash API/);
+  assert.doesNotMatch(imagery, /never Unsplash/i);
+  assert.match(imagery, /`Photo` with `alt` and `fallback`/);
+  assert.match(imagery, /Never picsum or placeholder services/);
+  const palette = body.split('\n').find((line) => line.startsWith('2. **Palette.**')) ?? '';
+  assert.match(palette, /built with depth, never flattened/);
+  await client.close();
+  await server.close();
+});
