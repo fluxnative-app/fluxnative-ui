@@ -484,6 +484,7 @@ test('every registry entry has a valid recipeKind, next to its untouched compone
   assert.deepEqual(Object.entries(readRegistryMeta()).filter(([, m]) => !RECIPE_KINDS.includes(m.recipeKind)).map(([name]) => name), [], 'every meta entry too');
   assert.deepEqual(registry.components.filter((c) => !['component', 'hook', 'module'].includes(c.kind)).map((c) => c.name), [], 'kind keeps its own meaning');
   const kindOf = (name: string) => registry.components.find((c) => c.name === name)?.recipeKind;
-  for (const name of ['Press', 'Toggle', 'TextField', 'Sheet', 'StateView', 'Photo', 'useAiChat', 'useReducedMotion']) assert.equal(kindOf(name), 'behaviour', name);
-  for (const name of ['Button', 'Chip', 'Icon', 'ScreenHeader', 'TabBar', 'ProductCard']) assert.equal(kindOf(name), 'visual', name);
+  // Named too: the entries the 0.1.0 release merged in after K3 (K12 Press, K4 Photo and Avatar, K13 the dock inset).
+  for (const name of ['Press', 'Toggle', 'TextField', 'Sheet', 'StateView', 'Photo', 'useAiChat', 'useReducedMotion', 'useDockInset']) assert.equal(kindOf(name), 'behaviour', name);
+  for (const name of ['Button', 'Chip', 'Icon', 'ScreenHeader', 'TabBar', 'BottomBar', 'Avatar', 'ProductCard']) assert.equal(kindOf(name), 'visual', name);
 });
