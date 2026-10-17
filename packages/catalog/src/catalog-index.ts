@@ -206,11 +206,13 @@ export function renderCatalogIndex(): string {
   // Rare props a component's metadata keeps out of the index (`indexOmit`); registry.json lists every prop.
   const meta = JSON.parse(readFileSync(join(PACKAGE_ROOT, 'registry.meta.json'), 'utf8')) as Record<string, { indexOmit?: string[] }>;
   const omitted = (c: Component, p: Prop) => LEGEND.has(p.name) || (p.optional && DEFAULT_TEXT.has(p.name)) || (meta[c.name]?.indexOmit ?? []).includes(p.name);
-  const bare = (p: Prop) => p.name === 'haptic' || p.type === 'node' || (p.type === 'fn' && /^on[A-Z]/.test(p.name)) || ['string', 'boolean', 'number'].includes(p.type);
+  const bare = (p: Prop) => p.name === 'haptic' || p.type === 'DimensionValue' || p.type === 'node' || (p.type === 'fn' && /^on[A-Z]/.test(p.name)) || ['string', 'boolean', 'number'].includes(p.type);
+  // A type named after its prop (accessibilityState: AccessibilityState) says nothing the name does not; `readonly` only promises the recipe will not mutate the array.
+  const typeOf = (p: Prop) => (p.type.toLowerCase() === p.name.toLowerCase() ? '' : `(${closedValues(p.type.replace(/\breadonly /g, ''))})`);
   const props = (c: Component) =>
     c.props
       .filter((p) => !omitted(c, p))
-      .map((p) => `${p.name}${p.optional ? '?' : ''}${bare(p) ? '' : `(${closedValues(p.type)})`}`)
+      .map((p) => `${p.name}${p.optional ? '?' : ''}${bare(p) ? '' : typeOf(p)}`)
       .join(' ');
   const elsewhere = comps.filter((c) => c.from !== `../components/${c.name}`);
   const nodeProps = [...new Set(comps.flatMap((c) => c.props.filter((p) => p.type === 'node').map((p) => p.name)))].sort();
@@ -224,10 +226,10 @@ export function renderCatalogIndex(): string {
     `1. Imports: \`react\`, \`react-native\`, \`react-native-svg\`, \`flux\`, \`flux/navigation\` and relative files only. Components: \`../components/<Name>\`${elsewhere.length ? ` (but ${elsewhere.map((c) => `\`${c.from}\``).join(', ')})` : ''}; tokens: \`{ type, space, shape, elevation, layout }\` from \`../theme/tokens\`; colours: \`../theme/usePalette\`.`,
     '2. React Native only: no `className`, `<div>`, `<span>`, `document.`, `window`, `fetch`. Overlay: `StyleSheet.absoluteFill` (`absoluteFillObject` is gone in RN 0.86).',
     '3. Colours: `const palette = usePalette()`, then `palette.primary`. Never a hex/rgb literal in a screen.',
-    '4. Text: spread a role, `...type.body`. Radii: `borderRadius: shape.card` (a number). Spacing: `space[4]` (step × 4 px) with a key from the `space` row below; any other size is a plain number. Shadows: spread `elevation[2]`.',
+    '4. Text: spread a role, `...type.body`. Radii: `borderRadius: shape.card` (number). Spacing: `space[4]` (step × 4 px; keys in the `space` row), other sizes plain numbers. Shadows: spread `elevation[2]`.',
     '5. Every control has an `accessibilityLabel`, icon-only ones too. Animate `transform`/`opacity` only; primitives respect Reduce Motion.',
-    '6. One default export per screen file, strict TypeScript. Screens take `previewState` (`live|loading|empty|error`) and render `Skeleton` / `StateView` for the non-live states.',
-    '7. A recipe before a hand-drawn view: `MessageList` for a chat, `ListRow` for a row, `TabBar` for tabs, `StateView` for empty and error.',
+    '6. One default export per screen file, strict TypeScript. Screens take `previewState` (`live|loading|empty|error`) and render `Skeleton` / `StateView` unless live.',
+    '7. A recipe before a hand-drawn view: `MessageList` (chat), `ListRow` (row), `TabBar` (tabs), `StateView` (empty, error).',
     '',
     '### Tokens (`../theme/tokens`)',
     row(['export', 'keys']),
@@ -240,11 +242,11 @@ export function renderCatalogIndex(): string {
     row(['`layout`', tokenKeys(tokens, 'layout').join(' ')]),
     '',
     '### Components (default exports)',
-    row(['component', 'props (`?` optional; closed values in parentheses, `a/b` is `\'a\'` or `\'b\'`)']),
+    row(['component', 'props (`?` optional; `(…)` type, `a/b` is `\'a\'` or `\'b\'`)']),
     row(['---', '---']),
     ...comps.map((c) => row([`\`${c.name}\``, props(c) || '—'])),
     '',
-    `Every component also takes \`style?\`. \`on*\` props are callbacks; ${nodeProps.map((n) => `\`${n}\``).join(' ')} take a node; \`XVariant\` is X's \`variant\` values. \`accessibilityLabel\` without \`?\` is required. \`haptic?\` is none|light|selection|medium. Rare props: in \`packages/catalog/registry.json\`.`,
+    `Every component also takes \`style?\`. \`on*\` props are callbacks; ${nodeProps.map((n) => `\`${n}\``).join(' ')} take a node; \`XVariant\` is X's \`variant\` values. \`accessibilityLabel\` without \`?\` is required. \`haptic?\` is none|light|selection|medium; \`width\`/\`height\` take px or \`'50%'\`. Rare props: \`packages/catalog/registry.json\`.`,
     '',
     iconNamesLine(),
     '',

@@ -425,6 +425,9 @@ test('the catalog index fits the budget, lists every component and the token rol
   }
   assert.match(index, /\|`type`\|display headline title body bodySm label caps numeric\|/);
   assert.match(index, /\|`elevation`\|0 1 2 3 4\|/);
+  // 0.1.0 props that once sat in indexOmit for lack of room: a model has to see them to use them.
+  for (const prop of ['minTarget?(number\\|false)', 'placeholderColor?(muted/', 'fallbackIcon?(']) assert.ok(index.includes(prop), prop);
+  assert.doesNotMatch(index, /readonly |accessibilityState\?\(|\(DimensionValue\)/, 'no bytes on what the prop name or the legend already says');
   assert.doesNotMatch(index.replace(/\\\|/g, ''), /\|[^|\n]*'[a-z]+'\|'/, 'pipes inside a cell are escaped');
   const committed = readFileSync(join(import.meta.dirname, '..', '..', '..', 'docs', 'llm', 'CATALOG.index.md'), 'utf8');
   assert.equal(committed, index, 'run `pnpm tokens` to regenerate docs/llm/CATALOG.index.md');

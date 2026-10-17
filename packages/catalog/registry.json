@@ -1531,8 +1531,6 @@
       ],
       "indexOmit": [
         "placeholder",
-        "placeholderColor",
-        "fallbackIcon",
         "onLoad",
         "onError"
       ],
@@ -1633,9 +1631,6 @@
       "use": "The one pressable under every custom control: scale, haptic, a required name; it reaches a 44 pt target by itself (hit slop grown on each short axis, layout unchanged). An explicit `hitSlop` wins; `minTarget={false}` for dense controls whose neighbours are closer than the slop would reach.",
       "archetypes": [
         "*"
-      ],
-      "indexOmit": [
-        "minTarget"
       ],
       "aliases": [
         "Press",
