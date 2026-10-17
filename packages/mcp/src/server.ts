@@ -5,6 +5,7 @@
 //
 //   search_components  words → the recipes that fit, with props and evidence
 //   get_component      one recipe: props, deps, when to use, the source
+//   get_archetype      a screen archetype → the recipes that fit it, then the general ones
 //   get_index          the ≤ 9 KB CATALOG.index.md
 //   get_design_rules   docs/llm/CRAFT.index.md, the design rules models follow
 //   list_tokens        palette roles, type / shape / elevation / space keys
@@ -17,7 +18,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { FILES_DIR, PACKAGE_ROOT as CATALOG_ROOT, CATALOG_VERSION, renderCatalogIndex, renderRegistry, type Registry, type RegistryEntry } from '@fluxnative/catalog';
+import { ARCHETYPES, FILES_DIR, PACKAGE_ROOT as CATALOG_ROOT, CATALOG_VERSION, isArchetype, renderArchetypeMap, renderCatalogIndex, renderRegistry, type Archetype, type ArchetypeMap, type Registry, type RegistryEntry } from '@fluxnative/catalog';
 import { loadCatalog } from './graders/catalog.ts';
 import { gradeDialect } from './graders/dialect.ts';
 import { gradeProps } from './graders/props.ts';
@@ -33,6 +34,12 @@ let cached: Registry | null = null;
 export function registry(): Registry {
   cached ??= renderRegistry();
   return cached;
+}
+
+let cachedMap: ArchetypeMap | null = null;
+function archetypeMap(): ArchetypeMap {
+  cachedMap ??= renderArchetypeMap(registry());
+  return cachedMap;
 }
 
 const text = (value: unknown) => ({ content: [{ type: 'text' as const, text: typeof value === 'string' ? value : JSON.stringify(value, null, 2) }] });
@@ -69,6 +76,34 @@ export function getComponent(name: string, withSource: boolean): (RegistryEntry 
   if (!withSource) return entry;
   const file = join(FILES_DIR, entry.path);
   return { ...entry, source: existsSync(file) ? readFileSync(file, 'utf8') : undefined };
+}
+
+/** A recipe as get_archetype lists it: enough to pick one, get_component for the rest. */
+export interface ArchetypeRecipe {
+  name: string;
+  from: string;
+  summary: string;
+  use: string;
+}
+
+export interface ArchetypeAnswer {
+  archetype: Archetype;
+  /** Recipes that name this archetype, most evidence first. */
+  recipes: ArchetypeRecipe[];
+  /** Recipes for any screen (`*`) not already in `recipes`. */
+  general: ArchetypeRecipe[];
+}
+
+/** One entry of registry.archetypes.json with each recipe's summary and use line; an unknown archetype gets the valid ones. */
+export function getArchetype(archetype: string): ArchetypeAnswer | { error: string; valid: readonly string[] } {
+  if (!isArchetype(archetype)) return { error: `no screen archetype named ${archetype}`, valid: ARCHETYPES };
+  const entry = archetypeMap().archetypes[archetype];
+  const byName = new Map(registry().components.map((c) => [c.name, c]));
+  const describe = (name: string): ArchetypeRecipe => {
+    const c = byName.get(name);
+    return { name, from: c?.from ?? '', summary: c?.summary ?? '', use: c?.use ?? '' };
+  };
+  return { archetype, recipes: entry.recipes.map(describe), general: entry.general.map(describe) };
 }
 
 export interface Validation {
@@ -121,6 +156,20 @@ export function createServer(): McpServer {
     async ({ name, source }) => {
       const entry = getComponent(name, source ?? false);
       return text(entry ?? { error: `no catalog component or alias named ${name}`, known: registry().components.map((c) => c.name) });
+    },
+  );
+
+  server.registerTool(
+    'get_archetype',
+    {
+      title: 'Recipes for a screen archetype',
+      description:
+        'The recipes that fit one screen archetype (OpenDesign\'s 30 plus ai-chat, ai-generate, ai-scan, ai-voice, ai-insight): first those made for it, most evidence first, then the general ones that fit any screen, each with its import path, one-line summary and when to use it. Use when a screen\'s archetype is known and its parts are not; get_component reads one in full.',
+      inputSchema: { archetype: z.string().min(1).describe('A screen archetype: cart-checkout, settings, ai-chat…') },
+    },
+    async ({ archetype }) => {
+      const answer = getArchetype(archetype);
+      return 'error' in answer ? { ...text(answer), isError: true } : text(answer);
     },
   );
 

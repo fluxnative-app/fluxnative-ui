@@ -138,6 +138,6 @@ export function renderRegistry(): Registry {
   };
 }
 
-export function renderRegistryJson(): string {
-  return `${JSON.stringify(renderRegistry(), null, 2)}\n`;
+export function renderRegistryJson(registry: Registry = renderRegistry()): string {
+  return `${JSON.stringify(registry, null, 2)}\n`;
 }

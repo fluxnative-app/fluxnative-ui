@@ -20,6 +20,7 @@
     "src",
     "files",
     "registry.json",
+    "registry.archetypes.json",
     "registry.meta.json",
     "!src/**/*.test.ts",
     "!src/**/*.test.tsx",
