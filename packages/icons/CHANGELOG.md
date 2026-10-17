@@ -1,5 +1,12 @@
 # @fluxnative/icons
 
+## 0.1.0
+
+### Patch Changes
+
+- Updated dependencies [7491251]
+  - @fluxnative/tokens@0.1.0
+
 ## 0.0.1
 
 ### Minor Changes

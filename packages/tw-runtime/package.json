@@ -1,6 +1,6 @@
 {
   "name": "@fluxnative/tw-runtime",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Runtime Tailwind class resolver for FluxNative UI hosts with no build step (Flux WebView, Snack).",
   "license": "MIT",
   "repository": {

@@ -1,6 +1,6 @@
 {
   "name": "@fluxnative/icons",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "FluxNative UI icon table: one closed set of names mapped to SF Symbols, Material Symbols and inline SVG paths, plus an <Icon> that draws the SVG.",
   "license": "MIT",
   "repository": {
