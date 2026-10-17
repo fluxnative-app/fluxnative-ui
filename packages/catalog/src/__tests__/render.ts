@@ -174,7 +174,11 @@ const reactNative = {
 const STUBS: Record<string, unknown> = {
   react,
   'react-native': reactNative,
-  'react-native-svg': { __esModule: true, default: 'Svg', Path: 'Path' },
+  'react-native-svg': {
+    __esModule: true,
+    default: 'Svg',
+    ...Object.fromEntries(['Path', 'Circle', 'Ellipse', 'G', 'Defs', 'LinearGradient', 'RadialGradient', 'Stop'].map((name) => [name, name])),
+  },
 };
 
 /** Returns a file's source under a `files/`-relative path, or undefined. */

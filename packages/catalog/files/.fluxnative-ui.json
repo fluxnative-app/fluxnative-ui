@@ -27,6 +27,7 @@
     "components/ListRow.tsx": "1e25b269197e30af2f68e4a1839e4b927d3b706841597c1824947d4084f7cac4",
     "components/MessageList.tsx": "fa7afbf333624f6a64e44b7aafc13f5c8d07c65ff1e920a134ad94a24a46a413",
     "components/Notice.tsx": "b2ee06283d2a747c2b56beb2decf4155bd338145587ab0ac1715cebbace8f1f6",
+    "components/Orb.tsx": "4144fb0f8dbff393b8de86d21f0e4991738cee44c4ec3d92d36833709ac91a66",
     "components/PageDots.tsx": "45c1c2ed1ee2450ad102987b9445b58ff5b8f9b8db508ec42c9290d958a21065",
     "components/Photo.tsx": "2ff5fb9d9cb1aeae359782acb5dee3cf99349bf3c5da4a9f69df8879dfdded06",
     "components/Press.tsx": "c1538e01eac692cf17686a28079e05cf89e60892bd81bf637ec4562b1d02d19e",

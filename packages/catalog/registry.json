@@ -1318,6 +1318,103 @@
       ]
     },
     {
+      "name": "Orb",
+      "kind": "component",
+      "path": "components/Orb.tsx",
+      "from": "../components/Orb",
+      "summary": "The assistant's orb: the mark of a voice or AI moment.",
+      "props": [
+        {
+          "name": "variant",
+          "optional": true,
+          "type": "'glass'|'pulse'"
+        },
+        {
+          "name": "size",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "from",
+          "optional": true,
+          "type": "'primary'|'secondary'|'tertiary'|'accent'|'inverse'"
+        },
+        {
+          "name": "to",
+          "optional": true,
+          "type": "'primary'|'secondary'|'tertiary'|'accent'|'inverse'"
+        },
+        {
+          "name": "state",
+          "optional": true,
+          "type": "'idle'|'connecting'|'listening'|'thinking'|'speaking'|'error'|'disabled'"
+        },
+        {
+          "name": "level",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "speed",
+          "optional": true,
+          "type": "number"
+        },
+        {
+          "name": "paused",
+          "optional": true,
+          "type": "boolean"
+        },
+        {
+          "name": "accessibilityLabel",
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "style",
+          "optional": true,
+          "type": "style"
+        }
+      ],
+      "exports": [
+        "OrbColor",
+        "OrbState",
+        "OrbVariant",
+        "clampOrbLevel",
+        "track"
+      ],
+      "since": "0.2.0",
+      "recipeKind": "visual",
+      "use": "The assistant's mark in a voice or AI moment, wrapped in that moment (a voice screen, an empty chat, a generating or insight card): `state` from the AI hook, `level` from the voice hook, updated at most 30 times a second. `glass` is a glossy sphere, `pulse` a core that emits rings.",
+      "archetypes": [
+        "ai-voice",
+        "ai-chat",
+        "ai-insight",
+        "ai-generate",
+        "onboarding"
+      ],
+      "aliases": [
+        "Orb",
+        "VoiceOrb",
+        "AiOrb",
+        "AssistantOrb",
+        "GlowOrb",
+        "PulseOrb"
+      ],
+      "evidence": {
+        "note": "Ported from voiceorbs glass-orb and pulse-orb (MIT, Alexis Munoz). Template-factory review of 2026-10-17: glossy orbs and the AI mark flattened in about 8 of 10 voice/AI templates, each drawing its own orb."
+      },
+      "indexOmit": [
+        "from",
+        "to",
+        "speed",
+        "accessibilityLabel"
+      ],
+      "deps": [
+        "bridge",
+        "useReducedMotion"
+      ]
+    },
+    {
       "name": "PageDots",
       "kind": "component",
       "path": "components/PageDots.tsx",
