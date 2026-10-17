@@ -19,7 +19,7 @@
   },
   "Avatar": {
     "since": "0.2.0",
-    "use": "A person or brand in a list row, a header, a message, a card: photo, else initials on a palette tone; a presence dot when the app has presence.",
+    "use": "A person or brand in a list row, a header, a message, a card: photo, else initials on a palette tone (also while it loads and when the URL fails); a presence dot when the app has presence.",
     "archetypes": [
       "profile",
       "social",
@@ -380,7 +380,7 @@
   },
   "Photo": {
     "since": "0.2.0",
-    "use": "Any remote picture in content: product, cover, avatar well, hero. Loads behind a skeleton, falls back on error, takes an overlay.",
+    "use": "Every remote picture in content (product, cover, hero): give it `alt`. Loads behind a skeleton; a dead URL shows `fallback`, or the `placeholderColor` well with `fallbackIcon`, at the same size, and the overlay stays.",
     "archetypes": [
       "home-feeds",
       "content-detail",
@@ -412,7 +412,11 @@
       }
     ],
     "indexOmit": [
-      "placeholder"
+      "placeholder",
+      "placeholderColor",
+      "fallbackIcon",
+      "onLoad",
+      "onError"
     ]
   },
   "Press": {

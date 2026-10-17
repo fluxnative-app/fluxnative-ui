@@ -15,7 +15,7 @@
   },
   "files": {
     "components/AiBadge.tsx": "7c4de3b7e87720802470d9409241690e2e64946cc9c09d45e5f9e131ba8cfbef",
-    "components/Avatar.tsx": "cbf79d98c40fec16a07380b196e09bac14e0453e0fb6d2a9400de2f417b7cc1e",
+    "components/Avatar.tsx": "6e65c9c01beed94400e49504130bfe7205fcd17f5969a3a76dab00c181c23912",
     "components/BottomBar.tsx": "19abd755793093157b7d9e7772199b50a7501c8f854702c1a31977657f2a8b0b",
     "components/Button.tsx": "9bb8200a3b17cb64249e73eb8531459a8e328ef28a7c7d21945c560ab1875a90",
     "components/Chip.tsx": "798ffcbb61ef764a43cfef87c3e51635aa1d559fde92e642086d953cdef3246b",
@@ -28,7 +28,7 @@
     "components/MessageList.tsx": "fa7afbf333624f6a64e44b7aafc13f5c8d07c65ff1e920a134ad94a24a46a413",
     "components/Notice.tsx": "b2ee06283d2a747c2b56beb2decf4155bd338145587ab0ac1715cebbace8f1f6",
     "components/PageDots.tsx": "45c1c2ed1ee2450ad102987b9445b58ff5b8f9b8db508ec42c9290d958a21065",
-    "components/Photo.tsx": "e3513e440683117a82ada9da66e9ebd42069dfee633cf660bcd85d5022cfeb0c",
+    "components/Photo.tsx": "2ff5fb9d9cb1aeae359782acb5dee3cf99349bf3c5da4a9f69df8879dfdded06",
     "components/Press.tsx": "d71e9d2bb840625cfcac956fe2482e075ddf80bef993e9be843ac0ae96e76d1b",
     "components/ProgressBar.tsx": "7f3f431ddb4ac5a70554ea34dcbd84c1cc4bc226b9437529e57c2c1d72d60653",
     "components/Rating.tsx": "d102cdf8d348673dd534a1c8cbeb9fd9667037fb0b7d664c256a8ea6ee316344",
