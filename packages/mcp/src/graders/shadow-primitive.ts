@@ -55,7 +55,8 @@ const NAME_RULES: readonly NameRule[] = [
   // Before BottomBar and Chip: BottomDock and TabPill are tab bars in the catalog, not a CTA bar or a chip.
   { primitive: 'TabBar', name: /^(?:\w*Tab(?:Bar|Dock|Pill|s)|\w*Dock|Bottom(?:Nav|Tabs))$/, via: ['TabBar'] },
   { primitive: 'BottomBar', name: /^(?:Bottom|Action|Checkout|Cta|Sticky)(?:Bar|Dock|Footer)$|^StickyFooter$/, via: ['BottomBar', 'Button'] },
-  { primitive: 'ScreenHeader', name: /^(?:Screen|Nav|Top|Page)?(?:Header|Bar)$|^ScreenShell$|^NavBar$|^Header$/, via: ['ScreenHeader', 'IconButton'] },
+  // A bare `Bar` is a skeleton line or a chart bar as often as a header: only a qualified one counts.
+  { primitive: 'ScreenHeader', name: /^(?:Screen|Nav|Top|Page)?Header$|^(?:Screen|Nav|Top|Page)Bar$|^ScreenShell$/, via: ['ScreenHeader', 'IconButton'] },
   { primitive: 'Avatar', name: /^(?:User|Profile)?Avatar$|^Initials$|^ProfilePhoto$/, via: ['Avatar'] },
   { primitive: 'ProgressBar', name: /^(?:Progress|Goal|Meter)(?:Bar)?$|^ProgressBar$|^LinearProgress$/, via: ['ProgressBar'] },
   { primitive: 'PageDots', name: /^(?:Page|Pager)?(?:Dots|Indicator)$|^Pager$|^PageIndicator$/, via: ['PageDots'] },

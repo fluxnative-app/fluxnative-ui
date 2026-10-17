@@ -18,3 +18,5 @@ export const CATALOG_CLI = join(CATALOG_DIR, 'src', 'cli.ts');
 export const CATALOG_TSCONFIG = join(CATALOG_DIR, 'tsconfig.files.json');
 /** react, react-native, react-native-svg and their types, which a scaffolded template resolves through a symlink. */
 export const CATALOG_NODE_MODULES = join(CATALOG_DIR, 'node_modules');
+/** `flux/glass` as the fluxbuilder-template dashboard has it: the kit's web host, vendored there as-is. */
+export const HOST_GLASS = join(REPO_ROOT, 'packages', 'glass', 'hosts', 'web', 'glass.tsx');
