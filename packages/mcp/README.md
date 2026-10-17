@@ -71,7 +71,7 @@ node packages/mcp/src/grade.js [--root <files/>] [--expect <file.json>] [--json]
   `{ "screens": { "<Name>": { ... } }, "default": { ... } }`. A screen with
   no expectation gets coverage `{ "pass": null, "details": "na: ..." }`,
   which does not gate.
-- `--json` prints `{ "version": 1, "kit": { "version" }, "pass", "screens":
+- `--json` prints `{ "version": 1, "kit": { "version", "commit" }, "pass", "screens":
   { "<Name>": { "pass", "dialect", "typecheck", "props", "tokens",
   "shadowPrimitive", "coverage", "metrics" } } }` on stdout, each grader as
   `{ pass, score, details }`. Without it: one line per failing grader, then a
@@ -80,6 +80,54 @@ node packages/mcp/src/grade.js [--root <files/>] [--expect <file.json>] [--json]
   usage or runtime error. A typecheck that cannot run (no `node_modules`) is
   reported as `{ "pass": false, "details": "unavailable: ..." }` and exits 1,
   never as a pass.
+
+## Run it in an agent lane
+
+A builder lane (a Claude Code agent in its own git worktree) and the gate
+that checks its work run the kit from a checkout pinned to one commit, the
+one the template repository's `tool/fluxnative.lock.json` names. One
+checkout per commit, shared by every lane on the machine:
+
+```bash
+sha=<commit from fluxnative.lock.json>
+kit=<kits>/${sha:0:7}
+git -C <fluxnative-ui clone> worktree add --detach "$kit" "$sha"
+pnpm --dir "$kit" install --frozen-lockfile --offline   # drop --offline when the store is cold
+node "$kit/packages/mcp/src/grade.js" --doctor           # exit 0 ready, 1 with each failing item named
+```
+
+`--doctor [--json]` (on both bins) checks Node 22.15 or newer, the installed
+dependencies (the MCP server's, and `react`, `react-native` and
+`@types/react` under `packages/catalog/node_modules`, which the typecheck
+links), and that the MCP server starts and answers `initialize` over stdio.
+Run it when the lane starts: a missing install then fails the lane with a
+reason instead of a grader reading `unavailable` in the middle of a gate.
+
+`--version [--json]` (on both bins) prints `{"version": "<package version>",
+"commit": "<HEAD of the kit checkout>"}`; `commit` is null outside a git
+checkout of this repository (installed from npm, or exported without
+`.git`). The grader's JSON report carries the same pair as `kit`, so a gate
+proves the kit it ran is the pinned one by comparing `kit.commit` with the
+lock.
+
+The lane's `.mcp.json`, for Claude Code:
+
+```json
+{ "mcpServers": { "fluxnative-ui": { "command": "node", "args": ["<kit>/packages/mcp/src/bin.js"] } } }
+```
+
+The gate's call, from the template repository:
+
+```bash
+node <kit>/packages/mcp/src/grade.js --root templates/<id>/files --expect <expect.json> --json
+```
+
+Exit 0 when every screen passes, 2 when a grader failed (the report says
+which), 1 for a usage or runtime error, including a typecheck that could
+not run. The root scripts do the same from anywhere, with relative paths
+resolved against the caller's folder: `pnpm -s --dir <kit> grade …` and
+`pnpm --dir <kit> mcp` (`-s` keeps pnpm's banner out of the output; the exit
+code passes through).
 
 ## Develop
 

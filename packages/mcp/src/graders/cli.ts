@@ -21,6 +21,8 @@
 // Exit 0 when every screen passes every grader, 2 when a grader failed, 1 for
 // a usage or runtime error, including a typecheck that could not run: that
 // grader is then `{ pass: false, details: "unavailable: <reason>" }`, never a pass.
+//
+// `--version` and `--doctor` are answered by ../lane.ts before this module loads.
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join, relative, resolve, sep } from 'node:path';
@@ -29,8 +31,9 @@ import type { Expect } from './coverage.ts';
 import { gradeScreen, Typechecker, type ScreenGrades } from './index.ts';
 import type { TypecheckDetails } from './typecheck.ts';
 import type { GradeResult } from './types.ts';
+import { kitInfo, LANE_USAGE, type KitInfo } from '../lane.ts';
 
-export const USAGE = 'usage: fluxnative-ui-grade [--root <files/>] [--expect <file.json>] [--json] <screen.tsx | dir>...';
+export const USAGE = `usage: fluxnative-ui-grade [--root <files/>] [--expect <file.json>] [--json] <screen.tsx | dir>...\n${LANE_USAGE('fluxnative-ui-grade')}`;
 
 export const GRADERS = ['dialect', 'typecheck', 'props', 'tokens', 'shadowPrimitive', 'coverage'] as const;
 export type GraderName = (typeof GRADERS)[number];
@@ -49,7 +52,8 @@ export interface ScreenReport extends Record<GraderName, ReportedGrade> {
 
 export interface Report {
   version: 1;
-  kit: { version: string };
+  /** The kit that graded: its version, and its git commit when it runs from a checkout (null from npm). */
+  kit: KitInfo;
   pass: boolean;
   screens: Record<string, ScreenReport>;
 }
@@ -116,7 +120,7 @@ export async function main(argv: string[], options: CliOptions = {}): Promise<nu
       unavailable = (error as Error).message;
     }
 
-    const report: Report = { version: 1, kit: { version: kitVersion() }, pass: true, screens: {} };
+    const report: Report = { version: 1, kit: kitInfo(), pass: true, screens: {} };
     for (const screen of screens) {
       const graded = gradeOne(screen, expectFor(screen.name), typechecker, catalog, unavailable, root);
       if (graded.unavailable !== null) unavailable ??= graded.unavailable;
@@ -304,11 +308,6 @@ function gradeOne(
   };
   const pass = GRADERS.every((name) => grades[name].pass !== false);
   return { report: { pass, ...grades, metrics }, unavailable };
-}
-
-function kitVersion(): string {
-  const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as { version?: unknown };
-  return typeof pkg.version === 'string' ? pkg.version : 'unknown';
 }
 
 function formatText(report: Report): string {
