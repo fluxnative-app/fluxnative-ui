@@ -49,11 +49,23 @@ including the two `validate_screen` leaves out: the typecheck (strict,
 coverage. A CI step or a template gate can call it directly:
 
 ```bash
-node packages/mcp/src/grade.js [--expect <file.json>] [--json] <screen.tsx | dir>...
+node packages/mcp/src/grade.js [--root <files/>] [--expect <file.json>] [--json] <screen.tsx | dir>...
 ```
 
 - A directory means every `*.tsx` directly in it; a screen's name is its
   file name without `.tsx`.
+- `--root <files/>` grades the screens of a Flux template (its `files/`
+  folder; `screens/` when no screen is given) in place of a bare catalog
+  layer. A relative import must land on a file inside the root (never
+  outside it), and the bare allowlist is the template contract (`flux`,
+  `flux/navigation`, `flux/glass`, Skia, reanimated besides React Native).
+  The typecheck compiles the screen inside a copy of the template, against
+  the kit's React Native types and the host modules' declarations
+  (`src/graders/host.ts`), and charges the screen only for errors in its own
+  file: errors in shared files go to `typecheck.details.elsewhere`. Props
+  and coverage know the recipes `.fluxnative-ui.json` lists, read from the
+  template's own copies, so a template component that shares a recipe's name
+  is not judged as that recipe.
 - `--expect` gives the recipes and `previewState` values a screen should
   cover: `{ "recipes": [...], "states": [...] }` for every screen, or
   `{ "screens": { "<Name>": { ... } }, "default": { ... } }`. A screen with

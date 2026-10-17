@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, describe, test } from 'node:test';
 import { GRADERS, main, type CliOptions, type Report } from './cli.ts';
 import { extract } from './extract.ts';
-import { FIXTURES_DIR } from './paths.ts';
+import { CATALOG_CLI, FIXTURES_DIR } from './paths.ts';
 
 const BIN = fileURLToPath(new URL('../grade.js', import.meta.url));
 const CATALOG_GRID = {
@@ -44,10 +44,12 @@ const passingChecker: NonNullable<CliOptions['typechecker']> = {
   dispose() {},
 };
 
-async function run(args: string[], typechecker = passingChecker): Promise<{ code: number; stdout: string; stderr: string }> {
+/** In process; `typechecker: null` lets `main` build the real one. */
+async function run(args: string[], typechecker: CliOptions['typechecker'] | null = passingChecker): Promise<{ code: number; stdout: string; stderr: string }> {
   let stdout = '';
   let stderr = '';
-  const code = await main(args, { typechecker, io: { stdout: (t) => (stdout += t), stderr: (t) => (stderr += t) } });
+  const io = { stdout: (t: string) => (stdout += t), stderr: (t: string) => (stderr += t) };
+  const code = await main(args, typechecker === null ? { io } : { typechecker, io });
   return { code, stdout, stderr };
 }
 
@@ -146,5 +148,76 @@ describe('fluxnative-ui-grade (in process)', () => {
     const t = await run([good], throwsOnCheck);
     assert.equal(t.code, 1);
     assert.match(t.stdout, /^FAIL Grid typecheck: unavailable: compiler crashed/m);
+  });
+});
+
+/** A Flux template's files/: the emitted catalog layer (Chip and what it brings) plus fixtures/template. */
+function template(name: string): string {
+  const files = join(dir, name, 'files');
+  execFileSync(process.execPath, [CATALOG_CLI, 'emit', '--to', files, '--only', 'Chip'], { stdio: 'pipe' });
+  for (const sub of ['components', 'data', 'theme', 'screens']) cpSync(join(FIXTURES_DIR, 'template', sub), join(files, sub), { recursive: true });
+  return files;
+}
+
+const reportOf = (stdout: string) => JSON.parse(stdout) as Report;
+
+describe('fluxnative-ui-grade --root (template mode)', () => {
+  test('a screen importing local components, data, theme and the host modules passes; screens/ is the default', async () => {
+    const files = template('tpl-pass');
+    const r = await run(['--json', '--root', files], null);
+    assert.equal(r.code, 0, r.stdout + r.stderr);
+    const s = reportOf(r.stdout).screens.ShelfScreen;
+    assert.ok(s !== undefined);
+    for (const grader of GRADERS) assert.notEqual(s[grader].pass, false, `${grader}: ${JSON.stringify(s[grader].details)}`);
+    assert.deepEqual((s.typecheck.details as { elsewhere: unknown[] }).elsewhere, []);
+    assert.equal(s.metrics.catalogElements, 1, 'the emitted Chip counts as a recipe, the template\'s ShelfCard does not');
+  });
+
+  test('without --root the same screen fails: the catalog layer alone has no ShelfCard', async () => {
+    const files = template('tpl-plain');
+    const r = await run(['--json', join(files, 'screens', 'ShelfScreen.tsx')]);
+    assert.equal(r.code, 2);
+    assert.equal(reportOf(r.stdout).screens.ShelfScreen?.dialect.pass, false);
+  });
+
+  test('a relative import that escapes the root fails dialect, even when the file exists', async () => {
+    const files = template('tpl-escape');
+    writeFileSync(join(dir, 'tpl-escape', 'outside.ts'), 'export const outside = 1;\n');
+    writeFileSync(join(files, 'screens', 'EscapeScreen.tsx'), "import React from 'react';\nimport { outside } from '../../outside';\nexport default function EscapeScreen() {\n  return outside === 1 ? null : null;\n}\n");
+    const r = await run(['--json', '--root', files], null);
+    assert.equal(r.code, 2);
+    const dialect = reportOf(r.stdout).screens.EscapeScreen?.dialect.details as { violations: { rule: string; message: string }[] };
+    assert.deepEqual(dialect.violations.map((v) => v.rule), ['relative']);
+    assert.match(dialect.violations[0]?.message ?? '', /escapes/);
+    assert.equal(reportOf(r.stdout).screens.ShelfScreen?.pass, true);
+  });
+
+  test('a missing local file fails dialect and typecheck', async () => {
+    const files = template('tpl-missing');
+    const screenFile = join(files, 'screens', 'ShelfScreen.tsx');
+    writeFileSync(screenFile, readFileSync(screenFile, 'utf8').replace("'../components/ShelfCard'", "'../components/ShelfTile'"));
+    const r = await run(['--root', files], null);
+    assert.equal(r.code, 2);
+    assert.match(r.stdout, /^FAIL ShelfScreen dialect: .*'\.\.\/components\/ShelfTile' resolves to no file/m);
+    assert.match(r.stdout, /^FAIL ShelfScreen typecheck: .*TS2307/m);
+  });
+
+  test('an error inside a shared component is reported under elsewhere and does not fail the screen', async () => {
+    const files = template('tpl-elsewhere');
+    appendFileSync(join(files, 'components', 'ShelfCard.tsx'), "\nexport const broken: number = 'x';\n");
+    const r = await run(['--json', '--root', files], null);
+    assert.equal(r.code, 0, r.stdout);
+    const typecheck = reportOf(r.stdout).screens.ShelfScreen?.typecheck;
+    assert.equal(typecheck?.pass, true);
+    const details = typecheck?.details as { errors: unknown[]; elsewhere: { file: string; code: number }[] };
+    assert.deepEqual(details.errors, []);
+    assert.deepEqual(details.elsewhere.map((e) => [e.file, e.code]), [['components/ShelfCard.tsx', 2322]]);
+  });
+
+  test('a screen outside the root and a root that is not a folder are usage errors', async () => {
+    const files = template('tpl-usage');
+    const outside = screen('good', 'Outside', 'tpl-usage-outside');
+    assert.equal((await run(['--root', files, outside])).code, 1);
+    assert.equal((await run(['--root', join(files, 'nope')])).code, 1);
   });
 });

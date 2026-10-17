@@ -2,7 +2,15 @@
 // typecheck, props, tokens, shadow-primitive, coverage) over `.tsx` files, for
 // callers that don't speak MCP, such as the template factory's gate.
 //
-//   fluxnative-ui-grade [--expect <file.json>] [--json] <screen.tsx | dir>...
+//   fluxnative-ui-grade [--root <files/>] [--expect <file.json>] [--json] <screen.tsx | dir>...
+//
+// `--root` is template mode: the screens belong to the Flux template whose
+// `files/` folder it names (screens/ is graded when no screen is given).
+// Relative imports must land on a file of that folder, the bare allowlist is
+// the full template contract, the typecheck compiles the screen inside the
+// template and charges it only for errors in its own file (the rest go to
+// `typecheck.details.elsewhere`), and the recipes are the ones the template's
+// `.fluxnative-ui.json` lists, read from its own copies.
 //
 // A directory means every `*.tsx` directly in it; a screen's name is its file
 // name without the extension. `--expect` gives the recipes and states a screen
@@ -15,14 +23,14 @@
 // grader is then `{ pass: false, details: "unavailable: <reason>" }`, never a pass.
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { basename, join } from 'node:path';
-import { loadCatalog, type Catalog } from './catalog.ts';
+import { basename, join, relative, resolve, sep } from 'node:path';
+import { loadCatalog, loadTemplateCatalog, MANIFEST_FILE, type Catalog } from './catalog.ts';
 import type { Expect } from './coverage.ts';
 import { gradeScreen, Typechecker, type ScreenGrades } from './index.ts';
 import type { TypecheckDetails } from './typecheck.ts';
 import type { GradeResult } from './types.ts';
 
-export const USAGE = 'usage: fluxnative-ui-grade [--expect <file.json>] [--json] <screen.tsx | dir>...';
+export const USAGE = 'usage: fluxnative-ui-grade [--root <files/>] [--expect <file.json>] [--json] <screen.tsx | dir>...';
 
 export const GRADERS = ['dialect', 'typecheck', 'props', 'tokens', 'shadowPrimitive', 'coverage'] as const;
 export type GraderName = (typeof GRADERS)[number];
@@ -78,7 +86,11 @@ export async function main(argv: string[], options: CliOptions = {}): Promise<nu
       io.stdout(`${USAGE}\n`);
       return 0;
     }
-    screens = collectScreens(parsed.paths);
+    if (parsed.root !== null) {
+      if (!existsSync(parsed.root) || !statSync(parsed.root).isDirectory()) throw new UsageError(`--root ${parsed.root} is not a directory`);
+      if (parsed.paths.length === 0) parsed.paths.push(join(parsed.root, 'screens'));
+    }
+    screens = collectScreens(parsed.paths, parsed.root);
     expectFor = parsed.expect === null ? () => EMPTY : loadExpect(parsed.expect, screens, io);
   } catch (error) {
     io.stderr(`fluxnative-ui-grade: ${(error as Error).message}\n`);
@@ -86,9 +98,17 @@ export async function main(argv: string[], options: CliOptions = {}): Promise<nu
     return 1;
   }
 
-  const typechecker = options.typechecker ?? new Typechecker();
+  const root = parsed.root;
+  const typechecker = options.typechecker ?? new Typechecker(root === null ? {} : { root });
   try {
-    const catalog = options.catalog ?? loadCatalog();
+    let catalog: Catalog;
+    if (options.catalog !== undefined) catalog = options.catalog;
+    else if (root === null) catalog = loadCatalog();
+    else {
+      const template = loadTemplateCatalog(root);
+      if (!template.manifest) io.stderr(`fluxnative-ui-grade: ${root} has no ${MANIFEST_FILE}; no recipe is known, so props and coverage see none\n`);
+      catalog = template;
+    }
     let unavailable: string | null = null;
     try {
       typechecker.prepare();
@@ -98,7 +118,7 @@ export async function main(argv: string[], options: CliOptions = {}): Promise<nu
 
     const report: Report = { version: 1, kit: { version: kitVersion() }, pass: true, screens: {} };
     for (const screen of screens) {
-      const graded = gradeOne(screen, expectFor(screen.name), typechecker, catalog, unavailable);
+      const graded = gradeOne(screen, expectFor(screen.name), typechecker, catalog, unavailable, root);
       if (graded.unavailable !== null) unavailable ??= graded.unavailable;
       report.screens[screen.name] = graded.report;
       if (!graded.report.pass) report.pass = false;
@@ -123,11 +143,12 @@ interface Args {
   help: boolean;
   json: boolean;
   expect: string | null;
+  root: string | null;
   paths: string[];
 }
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { help: false, json: false, expect: null, paths: [] };
+  const args: Args = { help: false, json: false, expect: null, root: null, paths: [] };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i] as string;
     if (arg === '--') {
@@ -141,19 +162,26 @@ function parseArgs(argv: string[]): Args {
       if (value === undefined || value === '') throw new UsageError('--expect needs a JSON file');
       if (args.expect !== null) throw new UsageError('--expect given twice');
       args.expect = value;
+    } else if (arg === '--root' || arg.startsWith('--root=')) {
+      const value = arg === '--root' ? argv[++i] : arg.slice('--root='.length);
+      if (value === undefined || value === '') throw new UsageError("--root needs a template's files/ folder");
+      if (args.root !== null) throw new UsageError('--root given twice');
+      args.root = resolve(value);
     } else if (arg.startsWith('-')) throw new UsageError(`unknown option ${arg}`);
     else args.paths.push(arg);
   }
-  if (!args.help && args.paths.length === 0) throw new UsageError('no screen given');
+  if (!args.help && args.paths.length === 0 && args.root === null) throw new UsageError('no screen given');
   return args;
 }
 
 interface Screen {
   name: string;
   file: string;
+  /** Template mode: the path inside the root, `/`-separated. */
+  inRoot: string | null;
 }
 
-function collectScreens(paths: string[]): Screen[] {
+function collectScreens(paths: string[], root: string | null): Screen[] {
   const screens: Screen[] = [];
   const seen = new Map<string, string>();
   const add = (file: string) => {
@@ -161,7 +189,13 @@ function collectScreens(paths: string[]): Screen[] {
     const other = seen.get(name);
     if (other !== undefined) throw new UsageError(`two screens named ${name}: ${other} and ${file}`);
     seen.set(name, file);
-    screens.push({ name, file });
+    let inRoot: string | null = null;
+    if (root !== null) {
+      const rel = relative(root, resolve(file));
+      if (rel.startsWith('..') || resolve(root, rel) !== resolve(file)) throw new UsageError(`${file} is not inside --root ${root}`);
+      inRoot = rel.split(sep).join('/');
+    }
+    screens.push({ name, file, inRoot });
   };
   for (const path of paths) {
     if (!existsSync(path)) throw new UsageError(`no such file or directory: ${path}`);
@@ -233,22 +267,24 @@ function gradeOne(
   typechecker: Pick<Typechecker, 'check'>,
   catalog: Catalog,
   unavailableBefore: string | null,
+  root: string | null,
 ): { report: ScreenReport; unavailable: string | null } {
   const code = readFileSync(screen.file, 'utf8');
   let unavailable = unavailableBefore;
   // A checker that cannot run leaves a placeholder that is replaced below, so the other graders still report.
   const guarded: Pick<Typechecker, 'check'> = {
-    check: (source, name) => {
+    check: (source, name, file) => {
       if (unavailable !== null) return PLACEHOLDER;
       try {
-        return typechecker.check(source, name);
+        return typechecker.check(source, name, file);
       } catch (error) {
         unavailable = (error as Error).message;
         return PLACEHOLDER;
       }
     },
   };
-  const g: ScreenGrades = gradeScreen(code, { screenName: screen.name, expect }, guarded, catalog);
+  const target = root === null || screen.inRoot === null ? { screenName: screen.name, expect } : { screenName: screen.name, expect, root, file: screen.inRoot };
+  const g: ScreenGrades = gradeScreen(code, target, guarded, catalog);
   const metrics: Record<string, number | boolean | null> = { ...g.metrics };
   const typecheck: ReportedGrade = unavailable === null ? g.typecheck : { pass: false, score: 0, details: `unavailable: ${unavailable}` };
   if (unavailable !== null) metrics.typecheckErrors = null;

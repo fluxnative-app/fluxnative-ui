@@ -46,6 +46,10 @@ export interface GradeTarget {
   /** Component and file name: the screen is checked as `screens/<screenName>.tsx`. */
   screenName: string;
   expect: Expect;
+  /** Template mode: the template's `files/` folder, which relative imports must land in. */
+  root?: string;
+  /** The screen's path inside `files/` (or `root`); `screens/<screenName>.tsx` by default. */
+  file?: string;
 }
 
 export function gradeOutput(output: string, target: GradeTarget, typechecker: Pick<Typechecker, 'check'>, catalog: Catalog = loadCatalog()): Grades {
@@ -102,8 +106,9 @@ export interface ScreenGrades {
 
 export function gradeScreen(code: string, target: GradeTarget, typechecker: Pick<Typechecker, 'check'>, catalog: Catalog = loadCatalog()): ScreenGrades {
   const screen = parseScreen(code);
-  const dialect = gradeDialect(screen, catalog, `${SCREEN_DIR}/${target.screenName}.tsx`);
-  const typecheck = typechecker.check(code, target.screenName);
+  const file = target.file ?? `${SCREEN_DIR}/${target.screenName}.tsx`;
+  const dialect = gradeDialect(screen, catalog, file, target.root);
+  const typecheck = typechecker.check(code, target.screenName, file);
   const props = gradeProps(screen, catalog);
   const tokens = gradeTokens(screen);
   const shadowPrimitive = gradeShadowPrimitive(screen);
