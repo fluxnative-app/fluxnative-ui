@@ -40,7 +40,19 @@ export function el(type: unknown, props: Props = {}, ...children: unknown[]): El
   return { type, props: all };
 }
 
-const react = {
+/** A context: `Provider` is expanded with its value in place for its children (see `expand`). */
+interface Context {
+  current: unknown;
+  Provider: { provides: Context };
+}
+
+export const react = {
+  createContext: (initial: unknown): Context => {
+    const context = { current: initial } as Context;
+    context.Provider = { provides: context };
+    return context;
+  },
+  useContext: (context: Context) => context.current,
   createElement: (type: unknown, props: Props | null, ...children: unknown[]) => el(type, props ?? {}, ...children),
   Fragment: FRAGMENT,
   useRef: (current: unknown) => ({ current }),
@@ -217,6 +229,16 @@ export function expand(node: unknown): Array<HostNode | string> {
   if (Array.isArray(node)) return node.flatMap(expand);
   const { type, props } = node as Element;
   if (type === FRAGMENT) return expand(props.children);
+  if (typeof type === 'object' && type !== null && 'provides' in type) {
+    const context = (type as { provides: Context }).provides;
+    const outer = context.current;
+    context.current = props.value;
+    try {
+      return expand(props.children);
+    } finally {
+      context.current = outer;
+    }
+  }
   if (typeof type === 'function') return expand((type as Component)(props));
   const { children, ...rest } = props;
   return [{ type: String(type), props: rest, children: expand(children) }];
@@ -275,6 +297,8 @@ export interface Rendered {
   mount: unknown[][];
   /** Per Pressable, what press-in, press-out and press did. */
   presses: unknown[][][];
+  /** Runs the cleanups the mount effects returned, last first. */
+  unmount: () => void;
   tree: Array<HostNode | string>;
 }
 
@@ -296,13 +320,16 @@ export function render(load: Loader, element: Element, device: Device = {}): Ren
   try {
     const tree = expand(element);
     const view = snapshot(tree);
-    for (const effect of effects.splice(0)) effect();
+    const cleanups = effects.splice(0).map((effect) => effect());
     const mount = log.splice(0);
+    const unmount = () => {
+      for (const cleanup of cleanups.reverse()) if (typeof cleanup === 'function') (cleanup as () => void)();
+    };
     const presses = findAll(tree, 'Pressable').map((node) => {
       for (const handler of ['onPressIn', 'onPressOut', 'onPress']) (node.props[handler] as ((event?: unknown) => void) | undefined)?.({});
       return log.splice(0);
     });
-    return { view, mount, presses, tree };
+    return { view, mount, presses, tree, unmount };
   } finally {
     delete host.flux;
   }

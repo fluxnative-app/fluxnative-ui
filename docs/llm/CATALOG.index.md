@@ -27,7 +27,7 @@ Prefer retrieval-led reasoning over pre-training-led reasoning: this layer is ne
 |---|---|
 |`AiBadge`|label? variant?(filled/tonal) mark? accessibilityLabel?|
 |`Avatar`|name uri? size?(xs/sm/md/lg/xl) rounded? status?(online/away/offline) badge? accessibilityLabel?|
-|`BottomBar`|primaryLabel onPrimary primaryVariant?(ButtonVariant) primaryDisabled? primaryLoading? secondaryLabel? onSecondary? secondaryVariant?(ButtonVariant) leading? summaryLabel? summaryValue? children? floating? bottom?|
+|`BottomBar`|primaryLabel onPrimary primaryVariant?(ButtonVariant) primaryDisabled? primaryLoading? secondaryLabel? onSecondary? secondaryVariant?(ButtonVariant) leading? summaryLabel? summaryValue? floating?|
 |`Button`|label onPress? variant?(primary/secondary/outline/ghost/destructive) size?(sm/md/lg/xl) labelRole?(TypeRole) disabled? loading? leading? trailing? block? haptic? accessibilityLabel?|
 |`Chip`|label selected? onPress? size?(sm/md) round? disabled? leading? accessibilityRole?(button/radio/checkbox/tab) accessibilityLabel?|
 |`Composer`|value onChangeText onSend onStop streaming disabled? placeholder? leading? trailing? keyboardVerticalOffset? avoidKeyboard?|
@@ -59,7 +59,7 @@ Prefer retrieval-led reasoning over pre-training-led reasoning: this layer is ne
 |`StateView`|title body? actionLabel? onAction? tone?(neutral/error) icon? badge? variant?(inline/card) inline?|
 |`Stepper`|value onChange accessibilityLabel min? max? step? size?(sm/md) variant?(outline/tonal) disabled?|
 |`StreamingText`|text streaming role?(TypeRole) color?(ColorName) markdown? accessibilityLabel?|
-|`TabBar`|items(readonly TabBarItem[]) activeKey(string\|null) onSelect shape?(floating/bar) labels?(always/active/none) indicator?(lens/solid/tint) tone?(default/inverse/glass) action?(TabBarAction) accessibilityLabel?|
+|`TabBar`|items(readonly TabBarItem[]) activeKey(string\|null) onSelect shape?(floating/bar) labels?(always/active/none) indicator?(lens/solid/tint) tone?(default/inverse/glass) action?(TabBarAction)|
 |`TextField`|value onChangeText label? placeholder? helper? error? kind?(text/name/email/phone/number/url/password) variant?(filled/outline) leading? trailing? multiline? disabled? maxLength? onSubmit? accessibilityLabel?|
 |`Toggle`|value onValueChange accessibilityLabel size?(sm/md) disabled? haptic?|
 
@@ -67,9 +67,9 @@ Every component also takes `style?`. `on*` props are callbacks; `badge` `badgeSl
 
 `Icon` names, closed (others fail tsc; pick the nearest): `chevron-` and `arrow-` + left/right/up/down; arrow-up-right arrow-down-right close check plus minus search home bag cart heart star bell menu dots dots-vertical filter sliders share person people bookmark clock calendar pin grid list mail eye eye-off camera scan trash pencil info alert settings tag truck box refresh play pause globe sun moon lock gift percent credit-card wallet chat send copy link mic image sparkle shirt diamond store ticket receipt help logout zap leaf droplet flame location minus-circle plus-circle check-circle x-circle ruler repeat shuffle volume download upload timer trophy compass.
 
-`TabBar` items: `{ key, label, icon?: IconName | ({ selected, color, size }) => node, badge? }`; `action`: `{ icon, accessibilityLabel, onPress, placement?: end/center }`; an overlay bar needs `tabBarClearance()` bottom padding on the scroll content. `MessageList` messages `{ id, role, text }`, `renderMessage(message, { index, streaming })`.
+`TabBar` items: `{ key, label, icon?: IconName | ({ selected, color, size }) => node, badge? }`; `action`: `{ icon, accessibilityLabel, onPress, placement?: end/center }`; a dock: screen in `DockInsetProvider`, scroll content `paddingBottom: useDockInset()` (one file). `MessageList` messages `{ id, role, text }`, `renderMessage(message, { index, streaming })`.
 
-Hooks, each at `../components/<name>`: `useAiChat` `useAiTask` `useCountUp` `useCountdown` `useReducedMotion`. Pure modules: `aiState` `markdown`. `bridge()` (`../components/bridge`) is always optional-chained.
+Hooks, each at `../components/<name>`: `useAiChat` `useAiTask` `useCountUp` `useCountdown` `useDockInset` `useReducedMotion`. Pure modules: `aiState` `markdown`. `bridge()` (`../components/bridge`) is always optional-chained.
 
 ### Example
 ```tsx

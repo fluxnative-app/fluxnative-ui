@@ -248,7 +248,7 @@ export function renderCatalogIndex(): string {
     '',
     iconNamesLine(),
     '',
-    '`TabBar` items: `{ key, label, icon?: IconName | ({ selected, color, size }) => node, badge? }`; `action`: `{ icon, accessibilityLabel, onPress, placement?: end/center }`; an overlay bar needs `tabBarClearance()` bottom padding on the scroll content. `MessageList` messages `{ id, role, text }`, `renderMessage(message, { index, streaming })`.',
+    '`TabBar` items: `{ key, label, icon?: IconName | ({ selected, color, size }) => node, badge? }`; `action`: `{ icon, accessibilityLabel, onPress, placement?: end/center }`; a dock: screen in `DockInsetProvider`, scroll content `paddingBottom: useDockInset()` (one file). `MessageList` messages `{ id, role, text }`, `renderMessage(message, { index, streaming })`.',
     '',
     `Hooks, each at \`../components/<name>\`: ${hooks.map((h) => `\`${h.name}\``).join(' ')}. Pure modules: ${modules.map((m) => `\`${m.name}\``).join(' ')}. \`bridge()\` (\`../components/bridge\`) is always optional-chained.`,
     '',
