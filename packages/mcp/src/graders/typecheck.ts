@@ -7,7 +7,7 @@
 // library files are cached across samples, so a check costs tens of ms.
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 import ts from 'typescript';
@@ -92,6 +92,12 @@ export class Typechecker {
 
   #scaffold(): string {
     if (this.#dir !== null) return this.#dir;
+    // Without these the screen would resolve nothing and every check would be noise, never a pass.
+    for (const dep of ['react', 'react-native']) {
+      if (!existsSync(join(CATALOG_NODE_MODULES, dep, 'package.json'))) {
+        throw new Error(`typecheck: ${dep} is not installed under ${CATALOG_NODE_MODULES} (run \`pnpm install\` first?)`);
+      }
+    }
     const dir = mkdtempSync(join(tmpdir(), 'fluxnative-eval-'));
     try {
       execFileSync(process.execPath, [CATALOG_CLI, 'emit', '--to', join(dir, 'files')], { stdio: 'pipe' });

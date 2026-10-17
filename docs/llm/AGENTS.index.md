@@ -86,3 +86,4 @@ export default function Home() {
 |AI pack for Flux templates: `flux.ai` host contract, useAiChat/useAiTask, StreamingText, Composer, MessageList, ScanFrame|`docs/topics/ai.md`|
 |API stability: what changes in a minor vs a major, deprecation windows|`docs/topics/versioning.md`|
 |Design rules: beyond the kit's defaults, store-review readiness|`docs/llm/CRAFT.index.md`|
+|Grade screens without MCP: `fluxnative-ui-grade [--expect <file.json>] [--json] <screen.tsx | dir>...` runs every grader, typecheck included; exit 0 pass, 2 fail, 1 error|`packages/mcp/README.md`|

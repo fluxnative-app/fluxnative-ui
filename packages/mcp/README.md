@@ -41,6 +41,34 @@ The prompt that gets the most out of it: "Before writing a screen, call
 `get_index`, then `search_components` for each part of the screen, then
 `validate_screen` on the result and fix what `next` says."
 
+## Grade screens without MCP
+
+`fluxnative-ui-grade` runs every deterministic grader over `.tsx` screens,
+including the two `validate_screen` leaves out: the typecheck (strict,
+`noUncheckedIndexedAccess`, against the emitted catalog layer) and recipe
+coverage. A CI step or a template gate can call it directly:
+
+```bash
+node packages/mcp/src/grade.js [--expect <file.json>] [--json] <screen.tsx | dir>...
+```
+
+- A directory means every `*.tsx` directly in it; a screen's name is its
+  file name without `.tsx`.
+- `--expect` gives the recipes and `previewState` values a screen should
+  cover: `{ "recipes": [...], "states": [...] }` for every screen, or
+  `{ "screens": { "<Name>": { ... } }, "default": { ... } }`. A screen with
+  no expectation gets coverage `{ "pass": null, "details": "na: ..." }`,
+  which does not gate.
+- `--json` prints `{ "version": 1, "kit": { "version" }, "pass", "screens":
+  { "<Name>": { "pass", "dialect", "typecheck", "props", "tokens",
+  "shadowPrimitive", "coverage", "metrics" } } }` on stdout, each grader as
+  `{ pass, score, details }`. Without it: one line per failing grader, then a
+  verdict.
+- Exit 0 when every screen passes every grader, 2 when one fails, 1 for a
+  usage or runtime error. A typecheck that cannot run (no `node_modules`) is
+  reported as `{ "pass": false, "details": "unavailable: ..." }` and exits 1,
+  never as a pass.
+
 ## Develop
 
 ```bash
@@ -50,5 +78,6 @@ pnpm --filter @fluxnative/ui-mcp typecheck
 
 `src/server.ts` holds the tools (pure functions `searchComponents`,
 `getComponent`, `validateScreen` plus `createServer`); `src/stdio.ts` serves
-them; `src/bin.js` is the launcher that strips TypeScript types the way
-`fluxnative-catalog` does.
+them; `src/graders/cli.ts` is `fluxnative-ui-grade`; `src/bin.js` and
+`src/grade.js` are the launchers, which strip TypeScript types the way
+`fluxnative-catalog` does (`src/launch.js`).
